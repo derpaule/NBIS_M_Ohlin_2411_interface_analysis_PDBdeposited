@@ -1,0 +1,1 @@
+/nethome/timschu/software/pymol_scripts/listselection.py

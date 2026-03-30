@@ -12,7 +12,7 @@ set cartoon_loop_radius, 0.5;
 set cartoon_cylindrical_helices, 1;
 /cmd.set('orthoscopic',1,'',0)
 /cmd.set('bg_rgb',0,'',0)
-run ./pymol_settings.py
+run ../pymol_settings.py
 viewport 800, 600
 
 # in final script replace by fetch.
@@ -24,7 +24,7 @@ super (OBJ01 and chain A), (REF and chain A)
 
 save OBJ01_aligned.pdb, OBJ01, 1, pdb
 
-run ./listselection.py
+run ../listselection.py
 orient OBJ01
 set_view (\
      0.381232381,   -0.002290156,   -0.924476564,\
@@ -246,7 +246,7 @@ scene scene_006, store
 
 #####
 ###scene_007
-run ../pymol_scripts/findseq.py
+run ../findseq.py
 cmd.scene('''scene_002''')
 create OBJ01_PRINT_AB1, OBJ01_PISA_AB1
 cmd.color_deep("palegreen", 'OBJ01_PRINT_AB1', 0)
