@@ -1,0 +1,5 @@
+"0","#%>% dplyr::mutate(., number1 = as.numeric(number1))"
+"0",""
+"0","PDBsum_rank_tribble.stats <- PDBsum_rank_tribble %>% dplyr::filter(., ranktype != ""distance"") %>% dplyr::arrange(., ranktype, rank)"
+"0",""
+"0","datatable(PDBsum_rank_tribble.stats, filter = 'top') "

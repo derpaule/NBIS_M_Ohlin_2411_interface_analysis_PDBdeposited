@@ -1,0 +1,8 @@
+"0","if (!dir.exists(""./pyscripts"")) {"
+"0","  dir.create(""./pyscripts"")"
+"0","}"
+"0",""
+"0",""
+"0","pisa_filelist_long_sel.pymol <- pisa_filelist_long_pymol %>% dplyr::select(., !c(""data"")) %>% dplyr::mutate(., obj_pisa = paste(obj, ""_PISA_"", arpeggio, sep="""") ) %>% group_by(., obj, arpeggio) %>% nest() %>% dplyr::mutate(., pymol_cmd = purrr::map(data, ~dplyr::mutate(., cmd = paste(""alter "", obj_pisa, "" and chain "", chain ,"" and resi "",resno, "", b="", bsa_perc_sum, "";"", sep = """")))) %>% dplyr::mutate(., pymol_cmd = purrr::map(pymol_cmd, ~dplyr::ungroup(.))) %>% dplyr::mutate(., pymol_cmd = purrr::map(pymol_cmd, ~dplyr::select(., cmd))) %>% dplyr::mutate(., pathname = paste(""./pyscripts/"", ""pisa_bsa_"", obj,""_"", arpeggio, "".pml"", sep = """"))"
+"0",""
+"0","pwalk(list(pisa_filelist_long_sel.pymol$pymol_cmd, pisa_filelist_long_sel.pymol$pathname), write_csv_pymol_f)"

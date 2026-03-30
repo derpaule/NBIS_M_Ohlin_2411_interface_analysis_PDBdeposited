@@ -1,0 +1,3 @@
+"0","pdbsum_filelist_atomlevel.stats <- pdbsum_filelist_atomlevel.tib %>% dplyr::select(., obj_arpeggio, id1, id2, number1, number2, name, name_cor) %>% dplyr::filter(., name_cor != ""Proximal"")"
+"0",""
+"0","datatable(pdbsum_filelist_atomlevel.stats, filter = 'top') "

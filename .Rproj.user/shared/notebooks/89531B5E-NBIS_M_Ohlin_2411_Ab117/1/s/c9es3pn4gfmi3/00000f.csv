@@ -1,0 +1,4 @@
+"0","protein_definition <- tribble(~obj, ~proteinID1, ~proteinID2, ~epitope,"
+"0","                              ""OBJ00"", ""ACE2"", ""PDB7A94"", ""ACE_bound"","
+"0","                              ""OBJ01"", ""Ab117_RBD01"", ""Ab117_RBD01"", ""Ab117_bound"""
+"0","                              )"
