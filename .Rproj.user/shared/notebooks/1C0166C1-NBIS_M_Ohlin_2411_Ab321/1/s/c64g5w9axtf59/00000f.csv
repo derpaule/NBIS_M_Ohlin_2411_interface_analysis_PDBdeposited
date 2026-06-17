@@ -1,6 +1,0 @@
-"0","pisasel_filelist = list.files(path = ""./pisarp_selections/"", pattern = ""*.txt"")"
-"0","pisasel_filelist.dat <- data.frame(folder = c(rep(""./pisarp_selections/"", length(pisasel_filelist))), files = pisasel_filelist)"
-"0","pisasel_filelist.dat$read <- paste(pisasel_filelist.dat$folder, pisasel_filelist.dat$files, sep = """")"
-"0","pisasel_filelist.tib <- as_tibble(pisasel_filelist.dat)"
-"0",""
-"0","pisasel_filelist.tib <- pisasel_filelist.tib %>% dplyr::select(files,read) %>% mutate(data = purrr::map(read,~read_delim(.,skip=1, delim = "" "", col_names = c(""selection"")))) %>% dplyr::mutate(data = purrr::map(data,~separate(., selection,into = c(""pysel"", ""chain"", ""resaa"", ""resid""), sep = ""\\\\""))) %>% dplyr::mutate(data = purrr::map(data,~dplyr::mutate(., resid = as.numeric(resid)))) %>% separate(files, into = c(""listselection"",""obj"",""pisaseltxt""), sep=""_"") %>% separate(pisaseltxt, into = c(""arpisa_sel"", ""txt""), sep=""\\."") %>% dplyr::select(., !c(""listselection"", ""txt"", ""read""))"

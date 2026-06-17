@@ -1,3 +1,0 @@
-"0","datatable(pdbsum_filelist_preboxplot.stats, filter = 'top') %>% saveWidget(., file = ""table_arp_resstats.html"", selfcontained = TRUE)"
-"0",""
-"0",""

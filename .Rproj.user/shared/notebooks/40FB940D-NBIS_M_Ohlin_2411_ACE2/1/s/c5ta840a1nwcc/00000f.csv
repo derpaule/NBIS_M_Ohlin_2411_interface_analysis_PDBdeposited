@@ -1,0 +1,6 @@
+"0","pdbsum_filelist_atomlevel.stats <- pdbsum_filelist_atomlevel.tib %>% dplyr::select(., obj_arpeggio, id1, id2, number1, number2, name, name_cor) %>% dplyr::filter(., name_cor != ""Proximal"")"
+"0",""
+"0","write_datatable_html("
+"0","  data = pdbsum_filelist_atomlevel.stats,"
+"0","  output_file = ""table_arp_stats.html"""
+"0",")"

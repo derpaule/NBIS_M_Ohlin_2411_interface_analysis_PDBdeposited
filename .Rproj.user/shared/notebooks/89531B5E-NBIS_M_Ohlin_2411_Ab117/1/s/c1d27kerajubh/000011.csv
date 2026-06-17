@@ -1,6 +1,0 @@
-"0","ref_pisafocus_list = list.files(path = ""../"", pattern = ""ref_pisafocus_selections_join.rds"", recursive = TRUE, include.dirs = TRUE, full.names = TRUE) "
-"0",""
-"0","ref_pisafocus_list.tib <- as_tibble(ref_pisafocus_list) %>% separate(., value, into = c(""dot"", ""empty"", ""foldername"", ""plotname""), sep = ""\\/"", remove = FALSE) %>% dplyr::select(., !c(""dot"", ""empty"")) %>% separate(., foldername, into = c(""NBIS"", ""pre"", ""Name"", ""Date"", ""sample""), sep = ""_"") %>% dplyr::select(., c(""value"", ""sample"", ""plotname"")) %>% dplyr::mutate(., plottype = str_remove(plotname, ""\\.rds"")) %>% dplyr::select(., !c(""plotname"")) %>% dplyr::mutate(., data = purrr::map(value, ~readRDS(.))) %>% dplyr::select(., !c(""value"")) "
-"0",""
-"0","ref_pisafocus_selections_join <- ref_pisafocus_list.tib %>% unnest(., data) %>% dplyr::select(., !c(""sample"", ""plottype""))"
-"0",""

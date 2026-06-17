@@ -1,0 +1,8 @@
+"0","#%>% dplyr::mutate(., number1 = as.numeric(number1))"
+"0",""
+"0","pdbsum_filelist_preboxplot.stats <- pdbsum_filelist_preboxplot.tib %>% dplyr::filter(., !grepl('Proximal|weak|Weak', name))"
+"0",""
+"0","write_datatable_html("
+"0","  data = pdbsum_filelist_preboxplot.stats,"
+"0","  output_file = ""table_arp_resstats.html"""
+"0",")"

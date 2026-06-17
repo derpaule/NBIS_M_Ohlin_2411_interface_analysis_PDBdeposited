@@ -1,0 +1,8 @@
+"0","combine_plots_f <- function(data){"
+"0","  data_out <- data %>% pivot_wider(., names_from = ""sample"", values_from=""plotted"") "
+"0","}"
+"0",""
+"0","plot_list = list.files(path = ""./"", pattern = ""pisa_ligand_plot_2_pre.rds|feature_contacts_boxplot_sum_pre.rds|feature_contacts_residue_contactplot_pre.rds|pisa_ligand_plot_1_pre.rds"", recursive = TRUE, include.dirs = TRUE, full.names = TRUE) "
+"0",""
+"0","plot_list_all.tib <- as_tibble(plot_list) %>% separate(., value, into = c(""dot"", ""empty"", ""foldername"", ""plotname""), sep = ""\\/"", remove = FALSE) %>% dplyr::select(., !c(""dot"", ""empty"")) %>% separate(., foldername, into = c(""NBIS"", ""pre"", ""Name"", ""Date"", ""sample""), sep = ""_"") %>% dplyr::select(., c(""value"", ""sample"", ""plotname"")) %>% dplyr::mutate(., plottype = str_remove(plotname, ""\\.rds"")) %>% dplyr::select(., !c(""plotname"")) %>% dplyr::mutate(., data = purrr::map(value, ~readRDS(.))) %>% dplyr::select(., !c(""value"")) "
+"0",""

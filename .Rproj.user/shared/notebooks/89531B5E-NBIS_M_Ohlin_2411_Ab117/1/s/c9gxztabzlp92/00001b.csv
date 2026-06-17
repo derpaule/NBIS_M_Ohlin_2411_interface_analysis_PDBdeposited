@@ -1,3 +1,0 @@
-"0","pisa_filelist_long.tab <- pisa_filelist_long_pymol %>% dplyr::select(., !c(""data""))"
-"0",""
-"0","datatable(pisa_filelist_long.tab, filter = 'top') "

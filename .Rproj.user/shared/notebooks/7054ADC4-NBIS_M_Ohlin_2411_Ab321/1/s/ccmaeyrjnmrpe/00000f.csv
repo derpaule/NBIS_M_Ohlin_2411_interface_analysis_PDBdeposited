@@ -1,0 +1,5 @@
+"0","pisa_filelist_long_sel.pymol <- build_pisa_pymol_scripts("
+"0","  pisa_filelist_long_pymol = pisa_filelist_long_pymol,"
+"0","  template_path = ""../pml_templates/alter_b_line.pmltpl"","
+"0","  output_dir = ""./pyscripts/"""
+"0",")"

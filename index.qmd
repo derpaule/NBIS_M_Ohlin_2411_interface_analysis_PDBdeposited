@@ -10,9 +10,9 @@ execute:
 
 # Custom visualization of Ab/antigen interactions by tidying PISA and Arpeggio outputs in R and PyMol
 
-The auxiliary scripts [NBIS_M_Ohlin_2411_Ab321](NBIS_M_Ohlin_2411_Ab321/NBIS_M_Ohlin_2411_Ab321.html) and [NBIS_M_Ohlin_2411_Ab117](NBIS_M_Ohlin_2411_Ab117/NBIS_M_Ohlin_2411_Ab117.html) were used to analyze the Ab321/RBD and Ab117/RBD interfaces, as presented in our [publication](), and also compared to the ACE2/RBD interface. 
+The auxiliary scripts [NBIS_M_Ohlin_2411_Ab321](NBIS_M_Ohlin_2411_Ab321/NBIS_M_Ohlin_2411_Ab321.html) and [NBIS_M_Ohlin_2411_Ab117](NBIS_M_Ohlin_2411_Ab117/NBIS_M_Ohlin_2411_Ab117.html) were used to analyze the Ab321/RBD and Ab117/RBD interfaces, as presented in our [publication](), and also compared to the ACE2/RBD interface.
 
-The scripts are work in progress, but provide a framework to analyze and visualize antigen/antibody interactions. If you know R and PyMol you could extend this script to other outputs, also consider AI tools. Or you could also transform this into a more automated solution. [Examples](https://pymolwiki.org/Jupyter) exist for PyMol embedded code/analysis within Jupyter notebooks. 
+The scripts are work in progress, but provide a framework to analyze and visualize antigen/antibody interactions. If you know R and PyMol you could extend this script to other outputs, also consider AI tools. Or you could also transform this into a more automated solution. [Examples](https://pymolwiki.org/Jupyter) exist for PyMol embedded code/analysis within Jupyter notebooks.
 
 Check the pml files (ASCII text), and copy commands scene-by-scene to move forward in PyMol. A break indicates when it´s time to create output from PISA or Arpeggio webservers. These outputs are imported to create summary boxplot visualizations of interaction surfaces, as well as additional PyMOl scripts used in the main PyMOL session scripts.
 
@@ -36,20 +36,31 @@ This setup was created for an interactive Work in RStudio with a shared renv pac
 
 and RStudio project files were created in each subfolder.
 
-```
+```         
 cp NBIS_M_Ohlin_2411_interface_analysis_PDBdeposited.Rproj NBIS_M_Ohlin_2411_Ab117/NBIS_M_Ohlin_2411_Ab117.Rproj
 cp NBIS_M_Ohlin_2411_interface_analysis_PDBdeposited.Rproj NBIS_M_Ohlin_2411_Ab321/NBIS_M_Ohlin_2411_Ab321.Rproj
 ```
 
-Run the next code chunk to initialize renv and install the packages. 
+Run the next code chunk to initialize renv and install the packages.
 
 # Shared renv environment
 
 Setting up the folder
 
+Set current wd if needed.
+
+```{r}
+setwd("../")
+```
+
+If not yet initialized:
+
 ```{r}
 # Initialize renv at the root: 
 renv::init()
+```
+
+```{r}
 
 # Install all packages needed by both projects
 renv::install("tidyverse")
@@ -87,19 +98,16 @@ renv::install("plotly")
 renv::snapshot()
 ```
 
-Make sure you have a `.Rprofile` at the root that activates renv Contents of `.Rprofile`: `source("renv/activate.R")`
-You also need to create `.Rprofile`files in the subfolders with the content: `source("../renv/activate.R")`
+Make sure you have a `.Rprofile` at the root that activates renv Contents of `.Rprofile`: `source("renv/activate.R")` You also need to create `.Rprofile`files in the subfolders with the content: `source("../renv/activate.R")`
 
-The easiest way to run the analyses in the other folders is to open the `.qmd` files manually and set the working directory to that subfolder, e.g. `setwd("./NBIS_M_Ohlin_2411_Ab117")`
-Paths can be set relative from where you are currently. The above cmd assumes that you are in the main folder.
-To get to know the current path `getwd()`
+The easiest way to run the analyses in the other folders is to open the `.qmd` files manually and set the working directory to that subfolder, e.g. `setwd("./NBIS_M_Ohlin_2411_Ab117")` Paths can be set relative from where you are currently. The above cmd assumes that you are in the main folder. To get to know the current path `getwd()`
 
 # Keeping Multiple .Rproj Files
 
 combined-site/ ├── combined-site.Rproj \# NEW: Main project ├── \_quarto.yml ├── renv/ ├── renv.lock ├── .Rprofile \# source("renv/activate.R") ├── project-a/ │ ├── project-a.Rproj \# Can keep for reference │ └── \[files\] └── project-b/ ├── project-b.Rproj \# Can keep for reference └── \[files\]
 
-
 # Combined plots
+
 The combined plots can only be run after analysis of the sub-folders.
 
 ## Load libraries
@@ -121,6 +129,9 @@ library(bio3d)
 library(statip)
 library(cowplot)
 library(plotly)
+
+# Source shared configuration
+source("R/shared_config.R")
 ```
 
 ## Load the exported plots to combine them.
@@ -136,60 +147,23 @@ plot_list_all.tib <- as_tibble(plot_list) %>% separate(., value, into = c("dot",
 
 ```
 
-### Filter out reference sample 
+### Filter out reference sample
 
 ```{r}
 plot_list.tib <- plot_list_all.tib %>% dplyr::filter(., sample != "ACE2")
 ```
 
-
 ### To define coloring schemes
 
 ```{r}
-#region_colors
-region_colors.tib <- tribble(~name, ~value,
-                        "CDR1", "#FFFF8F",
-                        "CDR2", "#FBC97D",
-                        "CDR3", "#ECB1CD",
-                        #"Sa", "#00FAFA",
-                        #"Sb", "#0000D4",
-                        "ACE", "#0035D6",
-                        #"Ca2", "#E07B21",
-                        #"Cb", "#E472E4",
-                        "other", "#FFFFFF",
-                        "SPIKE", "#FFFFFF",
-                        "FR", "#96D096",
-                        "AB1", "#96D096")
-
+# Load region colors from shared config (base palette for this comparison)
+region_colors.tib <- get_base_region_colors()
 region_colors <- region_colors.tib %>% deframe()
 
-#https://almerja.com/reading.php?idm=76110 basically Lehninger
-```
-
-```{r}
-yrb_yellow <- rgb(245, 163, 19, maxColorValue = 255, name = "yrb_yellow") %>% enframe() %>% pull(value)
-yrb_lyellow <- rgb(245, 201, 19, maxColorValue = 255, name = "yrb_lyellow") %>% enframe() %>% pull(value)
-yrb_l2yellow <- rgb(245, 239, 19, maxColorValue = 255, name = "yrb_l2yellow") %>% enframe() %>% pull(value)
-yrb_red <- rgb(241, 98, 99, maxColorValue = 255, name = "yrb_red") %>% enframe() %>% pull(value)
-yrb_lred <- rgb(247, 168, 169,maxColorValue = 255, name = "yrb_lred") %>% enframe() %>% pull(value)
-yrb_blue <- rgb(61, 130, 196, maxColorValue = 255, name = "yrb_blue") %>% enframe() %>% pull(value)
-yrb_lblue <- rgb(120, 168, 214, maxColorValue = 255, name = "yrb_lblue") %>% enframe() %>% pull(value)
-yrb_neutral <- rgb(216, 191, 216, maxColorValue = 255, name = "yrb_tan") %>% enframe() %>% pull(value) #col2rgb("tan")
-yrb_pisa <- rgb(202, 125, 204, maxColorValue = 255, name = "yrb_pisa") %>% enframe() %>% pull(value) #col2rgb("tan")
-
-arpeggio_sort_tribble <- tribble(~PIC_type, ~PIC_gencolor, ~PIC_typecolor, 
-                        "Hydrophobic", yrb_yellow, yrb_yellow,
-                        "Hydrogen", yrb_blue, yrb_blue,
-                        "Ionic", yrb_blue, yrb_lblue,
-                        "Aromatic", yrb_yellow, yrb_lyellow,
-                        "Cation-Pi", yrb_yellow, yrb_l2yellow,
-                        "Other", yrb_neutral, yrb_neutral)
-
-arpeggio_coltribble <- arpeggio_sort_tribble 
-
-arpeggio_assign_color <- arpeggio_coltribble %>% dplyr::mutate(., name = PIC_type)%>% dplyr::group_by(., name) %>% dplyr::summarize() %>% dplyr::mutate(., PIC_type = case_when(name == "Carbonyl" ~ "Other", name == "HydrogenBond" ~ "Hydrogen", name == "Polar" ~ "Hydrogen", name == "Proximal" ~ "Other", name == "VdW" ~ "Other", name == "vdW_Clash" ~ "Other", name == "weakHydrogenBond" ~ "Other", name == "WeakPolar" ~ "Other", TRUE ~ name)) %>% left_join(., arpeggio_coltribble) %>% dplyr::mutate(., priority = case_when(name == "Proximal" ~ "a", name == "Hydrophobic" ~ "b", name == "Aromatic" ~ "c", name == "HydrogenBond" ~ "d", name == "Ionic" ~ "e", name == "Polar" ~ "f", name == "weakHydrogenBond" ~ "g", name == "WeakPolar" ~ "h", name == "Carbonyl" ~ "i", name == "WeakPolar" ~ "j", TRUE ~ "k")) %>% unite(., col = "name_priority", c("priority", "name"), sep = ".", remove = FALSE) %>% dplyr::mutate(., facetPIC = case_when(name_priority == "c.Aromatic" ~ "b.Hydrophobic", name_priority == "e.Ionic" ~ "d.HydrogenBond", TRUE ~ name_priority)) %>% dplyr::mutate(., filled = case_when(PIC_type == "Aromatic" ~ "N", PIC_type == "Other" ~ "Y", PIC_type == "Ionic" & name == "Ionic" ~ "N", PIC_type == "Ionic" & name == "HydrogenBond" ~ "Y", PIC_type == "Hydrophobic" ~ "Y", PIC_type == "Hydrogen" ~ "Y"))
-
-arpeggio_assign_color_col <- arpeggio_assign_color %>% dplyr::mutate(., name = PIC_type) %>% dplyr::select(., name, PIC_typecolor) %>% deframe(.)
+# Load Arpeggio interaction type colors from shared config
+yrb <- get_yrb_colors()
+arpeggio_assign_color <- build_arpeggio_assign_color()
+arpeggio_assign_color_col <- get_arpeggio_assign_color_col(arpeggio_assign_color, key_column = "PIC_type")
 ```
 
 ## The plots

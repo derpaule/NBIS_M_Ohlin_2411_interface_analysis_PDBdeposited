@@ -1,7 +1,0 @@
-"0","# To define the proteins analysed in this script"
-"0",""
-"0","#RBD00 renamed to OBJ00"
-"0",""
-"0","protein_definition <- tribble(~obj, ~proteinID1, ~proteinID2, ~epitope,"
-"0","                              ""OBJ00"", ""ACE2"", ""PDB7A94"", ""ACE_bound"","
-"0","                              ""OBJ01"", ""Ab321"", ""PDBXXXX"", ""Ab321_bound"")"

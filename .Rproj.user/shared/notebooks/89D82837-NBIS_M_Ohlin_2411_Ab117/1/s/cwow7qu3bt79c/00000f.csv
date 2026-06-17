@@ -1,0 +1,8 @@
+"0","pisa_filelist_long_sel_resP.stats <- compute_pisa_region_stats("
+"0","  pisa_filelist_long_sel_regionsum = pisa_filelist_long_sel_regionsum"
+"0",")"
+"0",""
+"0","write_pisa_stats_table("
+"0","  pisa_filelist_long_sel_resP.stats = pisa_filelist_long_sel_resP.stats,"
+"0","  output_file = ""table_pisastats.html"""
+"0",")"

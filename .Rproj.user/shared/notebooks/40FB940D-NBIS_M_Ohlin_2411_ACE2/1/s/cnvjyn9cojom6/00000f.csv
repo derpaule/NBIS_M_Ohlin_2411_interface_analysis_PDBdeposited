@@ -1,0 +1,5 @@
+"0","# To define the proteins analysed in this script"
+"0",""
+"0","#RBD00 renamed to OBJ00"
+"0",""
+"0","protein_definition <- project_cfg$protein_definition"

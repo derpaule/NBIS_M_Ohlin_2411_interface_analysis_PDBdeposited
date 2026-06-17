@@ -1,5 +1,0 @@
-"0","#%>% dplyr::mutate(., number1 = as.numeric(number1))"
-"0",""
-"0","pdbsum_filelist_preboxplot.stats <- pdbsum_filelist_preboxplot.tib %>% dplyr::filter(., !grepl('Proximal|weak|Weak', name))"
-"0",""
-"0","datatable(pdbsum_filelist_preboxplot.stats, filter = 'top') "

@@ -1,37 +1,9 @@
 ---
 title: "NBIS_M_Ohlin_2411_ACE2"
 format: html
-editor: visual
-execute:
-  echo: true
-  eval: false
-  output: false
 ---
 
-# Custom visualization of Ab/antigen interactions by tidying PISA and Arpeggio outputs in R and PyMol
-
-## Introduction {.unnumbered}
-
-This is an auxiliary R script used to analyse the ACE2/RBD interaction. Initially, the analysis was integrated into the Ab117/RBD script.
-
-### Loading libraries required for the analysis
-
-These libraries are required for the R analysis of PISA and Arpeggio outputs.
-
 ```{r}
-library(tidyverse)
-library(xml2)
-library(DT)
-library(vroom)
-library(ggsci)
-library(kableExtra)
-library(ggforce)
-library(egg)
-library(ggpubr)
-library(datapasta)
-library(officer)
-library(formattable)
-library(bio3d)
 library(statip)
 library(plotly)
 #library(UniprotR)
@@ -43,14 +15,17 @@ Set the working directory to subfolder.
 setwd("./NBIS_M_Ohlin_2411_ACE2")
 ```
 
+
+```{r}
+source("../R/pml_templates.R")
+source("../R/shared_config.R")
+source("../R/shared_io.R")
+```
+
 ### Additional Functions {.unnumbered}
 
 ```{r Functions}
-write_csv_pymol_f <- function(data, pathname){
-  df_out <- write_csv(x=data, file = pathname, col_names = FALSE, quote = "none")
-  return(df_out)
-}
-
+# Shared helpers are sourced from ../R/pml_templates.R
 ```
 
 ## Protein definitions {.unnumbered}
@@ -60,29 +35,9 @@ This part is to make some initial definitions.
 ### To define amino acid types
 
 ```{r aa-definition}
-AA_tribble <- tribble(~resaa, ~resa, ~PIC_type, ~AAcolor,
-               "GLY", "G", "Hydrophobic", "NPA", #non-polar aliphatic
-               "ALA", "A", "Hydrophobic", "NPA",
-               "PRO", "P", "Hydrophobic", "NPA",
-               "VAL", "V", "Hydrophobic", "NPA",
-               "LEU", "L", "Hydrophobic", "NPA",
-               "ILE", "I", "Hydrophobic", "NPA",
-               "MET", "M", "Hydrophobic", "NPA",
-               "PHE", "F", "Aromatic", "NPP", #non-polar PHI (aromatic)
-               "TYR", "Y", "Aromatic", "NPP",
-               "TRP", "W", "Aromatic", "NPP",
-               "SER", "S", "HydrogenBond", "PU", # polar uncharged
-               "THR", "T", "HydrogenBond", "PU",
-               "CYS", "C", "HydrogenBond", "PU",
-               "ASN", "N", "HydrogenBond", "PU",
-               "GLN", "Q", "HydrogenBond", "PU",
-               "LYS", "K", "Ionic", "POS",
-               "ARG", "R", "Ionic","POS",
-               "HIS", "H", "Ionic","POS",
-               "ASP", "D", "Ionic", "NEG",
-               "GLU", "E", "Ionic", "NEG") 
-
-AA_singlecode <- AA_tribble %>% dplyr::select(., resaa, resa)
+project_cfg <- get_project_config("ace2")
+AA_tribble <- project_cfg$AA_tribble
+AA_singlecode <- project_cfg$AA_singlecode
 ```
 
 ### To define project-specific protein parameters
@@ -92,28 +47,14 @@ AA_singlecode <- AA_tribble %>% dplyr::select(., resaa, resa)
 
 #RBD00 renamed to OBJ00
 
-protein_definition <- tribble(~obj, ~proteinID1, ~proteinID2, ~epitope,
-                              "OBJ00", "ACE2", "PDB7A94", "ACE_bound",
-                              "OBJ01", "Ab321", "PDBXXXX", "Ab321_bound")
+protein_definition <- project_cfg$protein_definition
 ```
 
 ### To define coloring schemes
 
 ```{r color-definitions}
-#region_colors
-region_colors.tib <- tribble(~name, ~value,
-                        "CDR1", "#FFFF8F",
-                        "CDR2", "#FBC97D",
-                        "CDR3", "#ECB1CD",
-                        #"Sa", "#00FAFA",
-                        #"Sb", "#0000D4",
-                        "ACEb", "#5353ffff",
-                        #"Ca2", "#E07B21",
-                        #"Cb", "#E472E4",
-                        "other", "#FFFFFF",
-                        "FR", "#96D096")
-
-region_colors <- region_colors.tib %>% deframe()
+region_colors.tib <- project_cfg$region_colors.tib
+region_colors <- project_cfg$region_colors
 
 #https://almerja.com/reading.php?idm=76110 basically Lehninger
 
@@ -122,9 +63,7 @@ region_colors <- region_colors.tib %>% deframe()
 ## PISA analysis of interactions {.unnumbered}
 
 ```{r}
-if (!dir.exists("./pisarp_selections")) {
-  dir.create("./pisarp_selections")
-}
+ensure_dir("./pisarp_selections")
 ```
 
 Before continuing here, the relevant PDB file(s) should be processed in PyMol until inclusively `scene_004`.
@@ -138,28 +77,24 @@ Selections were exported from PyMOL using [listselection](https://pymolwiki.org/
 To read the PyMOL-exported selections.
 
 ```{r }
-pisasel_filelist = list.files(path = "./pisarp_selections/", pattern = "*.txt")
-pisasel_filelist.dat <- data.frame(folder = c(rep("./pisarp_selections/", length(pisasel_filelist))), files = pisasel_filelist)
-pisasel_filelist.dat$read <- paste(pisasel_filelist.dat$folder, pisasel_filelist.dat$files, sep = "")
-pisasel_filelist.tib <- as_tibble(pisasel_filelist.dat)
-
-pisasel_filelist.tib <- pisasel_filelist.tib %>% dplyr::select(files,read) %>% mutate(data = purrr::map(read,~read_delim(.,skip=1, delim = " ", col_names = c("selection")))) %>% dplyr::mutate(data = purrr::map(data,~separate(., selection,into = c("pysel", "chain", "resaa", "resid"), sep = "\\\\"))) %>% dplyr::mutate(data = purrr::map(data,~dplyr::mutate(., resid = as.numeric(resid)))) %>% separate(files, into = c("listselection","obj","pisaseltxt"), sep="_") %>% separate(pisaseltxt, into = c("arpisa_sel", "txt"), sep="\\.") %>% dplyr::select(., !c("listselection", "txt", "read"))
+pisasel_filelist.tib <- read_pymol_selection_files("./pisarp_selections/")
 ```
 
 To generate selections for Arpeggio output to identify interactions of residue with everything else. Alternatively, just use the selection `/D//`
 
 ```{r}
-if (!dir.exists("./arp_selections")) {
-  dir.create("./arp_selections")
-}
+ensure_dir("./arp_selections")
 
-arpeggio_selections.tib <- pisasel_filelist.tib %>% dplyr::mutate(., cmd = purrr::map(data, ~unite(., cmd, c("chain", "resid"), sep="/"))) %>% dplyr::mutate(., cmd = purrr::map(cmd, ~dplyr::mutate(., before = "/", after = "/"))) %>% dplyr::mutate(., cmd = purrr::map(cmd, ~unite(., cmd, c("before", "cmd", "after"), sep=""))) %>% dplyr::mutate(., cmd = purrr::map(cmd, ~dplyr::select(., cmd))) %>% dplyr::mutate(., filename = paste("./arp_selections/", obj, "_", arpisa_sel, ".txt", sep = ""))
+arpeggio_exports <- build_arpeggio_selections(
+  pisasel_filelist.tib = pisasel_filelist.tib,
+  output_dir = "./arp_selections/"
+)
 
-arpeggio_selections.sel <- arpeggio_selections.tib %>% dplyr::select(., obj, arpeggio = arpisa_sel, cmd)
+arpeggio_selections.tib <- arpeggio_exports$arpeggio_selections.tib
+arpeggio_selections.sel <- arpeggio_exports$arpeggio_selections.sel
+arpeggio_selections_join <- arpeggio_exports$arpeggio_selections_join
 
-arpeggio_selections_join <- arpeggio_selections.sel %>% unnest(., cmd)
-
-pwalk(list(arpeggio_selections.tib$cmd, arpeggio_selections.tib$filename), write_csv_pymol_f)
+write_arpeggio_selection_files(arpeggio_selections.tib)
 ```
 
 ### PISA analysis
@@ -169,9 +104,7 @@ During PyMol analysis, the domains relevant to interface analysis in PISA was sa
 First create the relevant folder
 
 ```{r}
-if (!dir.exists("./data_pisa")) {
-  dir.create("./data_pisa")
-}
+ensure_dir("./data_pisa")
 ```
 
 #### To import the PISA xml interface data, follow the instructions below, and save the XML files.
@@ -181,46 +114,19 @@ Select the XML of the interfacing residues and save this XML as `OBJ01_A_D.xml` 
 This should be done for all relevant interfaces, in this case for chains `A/D`.
 
 ```{r }
-pisa_xml_xtract_f <- function(df, children1, children2, children3){
-  if (children3 == "NONE"){
-  df_out <- df %>% xml_find_all(., children1) %>% xml_find_all(., children2) %>% xml_text(., trim = TRUE) %>% as_tibble(.)
-  }
-  else {
-  df_out <- df %>% xml_find_all(., children1) %>% xml_find_all(., children2) %>% xml_find_all(., children3) %>% xml_text(., trim = TRUE) %>% as_tibble(.)  
-  }
-  return(df_out)
-}
-
-
-pisa_xml_tribble <- tribble(~heading, ~children1, ~children2, ~children3,
-                            "HYDROGENBONDS", list("STRUCTURE"), list("STRUCTURE1", "DISTANCE", "STRUCTURE2"), list("NONE"), 
-                            "RESIDUES", list("RESIDUE1", "RESIDUE2"), list("RESIDUE"), list("STRUCTURE", "BURIEDSURFACEAREA"),
-                            "RESIDUES", list("RESIDUE1", "RESIDUE2"), list("RESIDUE"), list("SOLVENTACCESSIBLEAREA"),
-                            "SALTBRIDGES", list("STRUCTURE"), list("STRUCTURE1", "DISTANCE", "STRUCTURE2"), list("NONE")
-                            )
-
-pisa_xml_tribble <- pisa_xml_tribble %>% unnest(., children1) %>% unchop(., children1) %>% unnest(., children2) %>% unchop(., children2) %>% unnest(., children3) %>% unchop(., children3)
-
-
-#sorting data according to PIC-type
-
-pisa_filelist = list.files(path = "./data_pisa", pattern = "*", recursive = TRUE, include.dirs = TRUE, full.names = TRUE)
-pisa_filelist.tib <- as_tibble(pisa_filelist) %>% mutate(data = purrr::map(value,~read_xml(.))) %>% dplyr::mutate(., pisatype = "interface") %>% dplyr::mutate(., heading = case_when(pisatype == "hbonds" ~ "HYDROGENBONDS", pisatype == "interface" ~ "RESIDUES", pisatype == "sbridge" ~ "SALTBRIDGES", TRUE ~ "NONE")) %>% left_join(., pisa_xml_tribble) %>% dplyr::mutate(., xml_xtract = purrr::pmap(list(data, children1, children2, children3), pisa_xml_xtract_f))
-
-# Table below contains the details from PISA that were only described in the text 
-
-pisa_filelist_long <- pisa_filelist.tib %>% separate(., value, c("dot", "folder", "filename"), sep = "/") %>% dplyr::select(., !c("dot", "folder")) %>% separate(., filename, c("obj", "pair", "rm"), sep = "_") %>% dplyr::select(., !c("rm")) %>% dplyr::select(., obj, pair, pisatype, heading, children1, children2, children3, xml_xtract) %>% group_by(., obj, pair, pisatype, heading, children1) %>% nest() %>% dplyr::mutate(., data_wide = purrr::map(data, ~pivot_wider(., names_from = c(children2, children3), values_from = xml_xtract, names_sep = "_"))) %>% dplyr::mutate(., data_wide_unnested = purrr::map(data_wide, ~unchop(., cols = c(1:ncol(.))))) %>% dplyr::select(., -data, -data_wide) %>% dplyr::mutate(data_unnested = purrr::map(data_wide_unnested, ~unnest(.))) %>% dplyr::mutate(data_unnested = purrr::map(data_unnested, ~dplyr::select(., resid=value, bsa=value1, asa=value2))) %>% dplyr::select(., -data_wide_unnested) %>% unnest(., data_unnested) %>% separate(., resid, into = c("chain", "resid"), sep = ":") %>% dplyr::mutate(., resno = str_extract(resid,"[:digit:]{1,3}"), resaa = str_extract(resid,"[:alpha:]{1,3}")) %>% dplyr::mutate(., bsa = as.numeric(bsa), asa = as.numeric(asa), resno = as.numeric(resno)) %>% dplyr::mutate(., bsa_perc = (bsa/asa)*100) %>% dplyr::mutate(., bsa_perc = round(bsa_perc, 0)) %>% replace_na(list(bsa_perc=0)) %>% ungroup() %>% dplyr::select(., !c(heading, children1, pisatype)) %>% dplyr::select(., obj, pair, chain, resno, resaa, asa, bsa, bsa_perc) %>% group_by(., obj, pair) %>% nest(.) %>% dplyr::select(., obj, pair, pisa = data) %>% unnest(., pisa) %>% ungroup() %>% dplyr::group_by(obj, chain, resno, resaa) %>% nest() %>% dplyr::mutate(., data_sum=purrr::map(data, ~dplyr::summarize(., asa_mean=mean(asa), bsa_sum=sum(bsa), bsa_perc_sum=sum(bsa_perc)))) %>% unnest(., data_sum) %>% dplyr::mutate(., cmd = paste("/", chain, "/", resno, "/", sep="")) 
-
-pisa_filelist_long_pymol <- pisa_filelist_long %>% left_join(., arpeggio_selections_join) %>% dplyr::filter(., bsa_sum > 0)
+pisa_filelist_long_pymol <- read_pisa_interface_data(
+  pisa_dir = "./data_pisa",
+  arpeggio_selections_join = arpeggio_selections_join
+)
 ```
 
 #### To show the PISA interface table
 
 ```{r PISAtable, output=TRUE}
-pisa_filelist_long.tab <- pisa_filelist_long_pymol %>% dplyr::select(., !c("data"))
-
-datatable(pisa_filelist_long.tab, filter = 'top') 
-datatable(pisa_filelist_long.tab, filter = 'top') %>% saveWidget(., file = "table_pisa.html", selfcontained = TRUE)
+write_pisa_interface_table(
+  pisa_filelist_long_pymol = pisa_filelist_long_pymol,
+  output_file = "table_pisa.html"
+)
 ```
 
 #### To create the PISA visualization script for PyMol.
@@ -228,14 +134,11 @@ datatable(pisa_filelist_long.tab, filter = 'top') %>% saveWidget(., file = "tabl
 Outputs script to use in PyMOL.
 
 ```{r}
-if (!dir.exists("./pyscripts")) {
-  dir.create("./pyscripts")
-}
-
-
-pisa_filelist_long_sel.pymol <- pisa_filelist_long_pymol %>% dplyr::select(., !c("data")) %>% dplyr::mutate(., obj_pisa = paste(obj, "_PISA_", arpeggio, sep="") ) %>% group_by(., obj, arpeggio) %>% nest() %>% dplyr::mutate(., pymol_cmd = purrr::map(data, ~dplyr::mutate(., cmd = paste("alter ", obj_pisa, " and chain ", chain ," and resi ",resno, ", b=", bsa_perc_sum, ";", sep = "")))) %>% dplyr::mutate(., pymol_cmd = purrr::map(pymol_cmd, ~dplyr::ungroup(.))) %>% dplyr::mutate(., pymol_cmd = purrr::map(pymol_cmd, ~dplyr::select(., cmd))) %>% dplyr::mutate(., pathname = paste("./pyscripts/", "pisa_bsa_", obj,"_", arpeggio, ".pml", sep = ""))
-
-pwalk(list(pisa_filelist_long_sel.pymol$pymol_cmd, pisa_filelist_long_sel.pymol$pathname), write_csv_pymol_f)
+pisa_filelist_long_sel.pymol <- build_pisa_pymol_scripts(
+  pisa_filelist_long_pymol = pisa_filelist_long_pymol,
+  template_path = "../pml_templates/alter_b_line.pmltpl",
+  output_dir = "./pyscripts/"
+)
 ```
 
 With these PISA visualization scripts exported to `pyscripts`, the analysis continues in PyMol, starting with `scene_005.`
@@ -249,25 +152,21 @@ To get the PISA-focus groups, CDR and framework regions were defined using IMGT.
 Furthermore, the `listselection_OBJ00_AGN-ACEb.txt` file has been created previously for another project and was just copied herein.
 
 ```{r}
-if (!dir.exists("./pisarp_focus")) {
-  dir.create("./pisarp_focus")
-}
+ensure_dir("./pisarp_focus")
 
 ```
 
 ```{r ImportPISAfocus, echo=FALSE}
-pisafocus_filelist = list.files(path = "./pisarp_focus/", pattern = "*.txt")
-pisafocus_filelist.dat <- data.frame(folder = c(rep("./pisarp_focus/", length(pisafocus_filelist))), files = pisafocus_filelist)
-pisafocus_filelist.dat$read <- paste(pisafocus_filelist.dat$folder, pisafocus_filelist.dat$files, sep = "")
-pisafocus_filelist.tib <- as_tibble(pisafocus_filelist.dat)
+pisafocus_filelist.tib <- read_pymol_focus_files("./pisarp_focus/")
 
-pisafocus_filelist.tib <- pisafocus_filelist.tib %>% dplyr::select(files,read) %>% separate(files, into = c("listselection","obj","pisafocustxt"), sep="_") %>% separate(pisafocustxt, into = c("arpisa_focus", "txt"), sep="\\.") %>% dplyr::select(., !c("listselection", "txt")) %>% mutate(data = purrr::map(read,~read_delim(.,skip=1, delim = " ", col_names = c("selection")))) %>% dplyr::mutate(data = purrr::map(data,~separate(., selection,into = c("pysel", "chain", "resaa", "resid"), sep = "\\\\"))) %>% dplyr::mutate(data = purrr::map(data,~dplyr::mutate(., resid = as.numeric(resid)))) 
+pisafocus_exports <- build_focus_selections(
+  pisafocus_filelist.tib = pisafocus_filelist.tib,
+  output_dir = "./arpisa_focus/"
+)
 
-pisafocus_selections.tib <- pisafocus_filelist.tib %>% dplyr::mutate(., cmd = purrr::map(data, ~unite(., cmd, c("chain", "resid"), sep="/"))) %>% dplyr::mutate(., cmd = purrr::map(cmd, ~dplyr::mutate(., before = "/", after = "/"))) %>% dplyr::mutate(., cmd = purrr::map(cmd, ~unite(., cmd, c("before", "cmd", "after"), sep=""))) %>% dplyr::mutate(., cmd = purrr::map(cmd, ~dplyr::select(., cmd))) %>% dplyr::mutate(., filename = paste("./arpisa_focus/", obj, "_", arpisa_focus, ".txt", sep = ""))
-
-pisafocus_selections.sel <- pisafocus_selections.tib %>% dplyr::select(., obj, pisafocus = arpisa_focus, cmd)
-
-pisafocus_selections_join <- pisafocus_selections.sel %>% unnest(., cmd) %>% separate(., pisafocus, into = c("domain", "region"))
+pisafocus_selections.tib <- pisafocus_exports$pisafocus_selections.tib
+pisafocus_selections.sel <- pisafocus_exports$pisafocus_selections.sel
+pisafocus_selections_join <- pisafocus_exports$pisafocus_selections_join
 
 ```
 
@@ -276,47 +175,26 @@ pisafocus_selections_join <- pisafocus_selections.sel %>% unnest(., cmd) %>% sep
 Optional: the PISA bsa output can be used as reference input for the other two interfaces. 
 
 ```{r}
-# Function to split a value into smaller units
-split_value_f <- function(value, unit) {
-  if (value == 0) {
-    return(tibble(unit_value = 0, part = 1))
-  } else if (value < unit) {
-    return(tibble(unit_value = value, part = 1))
-  } else {
-    full_units <- value %/% unit  # Number of full units
-    remainder <- value %% unit  # Remaining value after full units
-    
-    # Create a data frame with full units
-    units_df <- tibble(
-      unit_value = rep(unit, full_units),
-      part = 1:full_units
-    )
-    
-    # Add the remainder if it's greater than 0
-    if (remainder > 0) {
-      units_df <- units_df %>%
-        add_row(unit_value = remainder, part = full_units + 1)
-    }
-    
-    return(units_df)
-  }
-}
-
-chain_adjustements <- tribble(~obj, ~arpeggio, ~chain, ~chain_adj,
-                              "OBJ00", "AB1", "D", "H",
-                              "OBJ01", "AB1", "L", "L",
-                              "OBJ01", "AB1", "H", "H")
+chain_adjustements <- project_cfg$chain_adjustements
 
 ref_pisafocus_selections_join <- pisafocus_selections_join %>% dplyr::filter(., obj == "OBJ00") %>% dplyr::select(., !c("obj"))
 
 noref_pisafocus_selections_join <- pisafocus_selections_join %>% dplyr::filter(., obj != "OBJ00")
 
-pisa_filelist_long_sel <- pisa_filelist_long_pymol %>% left_join(., ref_pisafocus_selections_join) %>% left_join(., noref_pisafocus_selections_join, by = c("obj", "cmd")) %>% dplyr::mutate(., domain = coalesce(domain.x, domain.y), region = coalesce(region.x, region.y)) %>% dplyr::select(., !c("domain.x", "domain.y","region.x", "region.y")) %>% replace_na(., list(domain="other", region="other")) %>% dplyr::select(., !c("domain")) %>% dplyr::mutate(., region_col = case_when((region == "other" & arpeggio == "AB1") ~ "FR", TRUE ~ region))
+pisa_filelist_long_sel <- merge_pisa_focus_regions(
+  pisa_filelist_long_pymol = pisa_filelist_long_pymol,
+  ref_pisafocus_selections_join = ref_pisafocus_selections_join,
+  pisafocus_selections_join = pisafocus_selections_join,
+  mode = "ace2"
+)
 
-pisa_filelist_long_sel_regionsum <- pisa_filelist_long_sel %>% dplyr::group_by(obj, arpeggio, chain, region_col) %>% dplyr::summarize(., bsa_sum = sum(bsa_sum)) %>% left_join(., chain_adjustements) %>% dplyr::mutate(chain_adj = coalesce(chain_adj, chain)) %>% ungroup() %>% dplyr::select(., obj, arpeggio, chain=chain_adj, region_col, bsa_sum)
+pisa_filelist_long_sel_regionsum <- summarize_pisa_regions(
+  pisa_filelist_long_sel = pisa_filelist_long_sel,
+  chain_adjustements = chain_adjustements
+)
 
 # To plot Rec
-pisa_ligand_plot_1.tib <- pisa_filelist_long_sel_regionsum %>% dplyr::filter(., arpeggio == "SPIKE") %>% ggplot(data=.) + geom_col(aes(x=chain, y = bsa_sum, fill = region_col), colour="black", size=0.5) +
+pisa_ligand_plot_1.tib <- pisa_filelist_long_sel_regionsum %>% dplyr::filter(., arpeggio == "SPIKE") %>% ggplot(data=.) + geom_col(aes(x=chain, y = bsa_sum, fill = region_col), colour="black", size=0.5, position = position_stack(reverse = TRUE)) +
 #scale_fill_gradient2("bsa: Å", midpoint = 80, low="lightblue", mid="blue", high="red", space ="Lab") +
   scale_fill_manual(values = region_colors, drop=FALSE) +
   theme_minimal() +
@@ -329,8 +207,7 @@ pisa_ligand_plot_1.tib <- pisa_filelist_long_sel_regionsum %>% dplyr::filter(., 
   #geom_text( aes(label = res1AA, y = -5), position = position_dodge(0.9), vjust = 0) +
   facet_grid(obj ~ .)
   #print(molprob_filelistdata_int_sum_ligres_area_sum_plot.tib)
-  ggsave(file="ggplot_pisa_bsa_1.jpeg", plot=pisa_ligand_plot_1.tib,device="jpeg", width = 55, height = 90, units = c("mm"))
-  ggsave(file="ggplot_pisa_bsa_1.ps", plot=pisa_ligand_plot_1.tib,device="ps", width = 55, height = 90, units = c("mm"))
+  save_plot_jpeg_ps(pisa_ligand_plot_1.tib, "ggplot_pisa_bsa_1", width = 55, height = 90)
 
   # To plot Ab1
   pisa_ligand_plot_2_pre.tib <- pisa_filelist_long_sel_regionsum %>% dplyr::filter(., arpeggio == "AB1") 
@@ -348,8 +225,7 @@ pisa_ligand_plot_1.tib <- pisa_filelist_long_sel_regionsum %>% dplyr::filter(., 
   #geom_text( aes(label = res1AA, y = -5), position = position_dodge(0.9), vjust = 0) +
   facet_grid(obj ~ .)
   #print(molprob_filelistdata_int_sum_ligres_area_sum_plot.tib)
-  ggsave(file="ggplot_pisa_bsa_2.jpeg", plot=pisa_ligand_plot_2.tib,device="jpeg", width = 65, height = 90, units = c("mm"))
-  ggsave(file="ggplot_pisa_bsa_2.ps", plot=pisa_ligand_plot_2.tib,device="ps", width = 65, height = 90, units = c("mm"))
+  save_plot_jpeg_ps(pisa_ligand_plot_2.tib, "ggplot_pisa_bsa_2", width = 65, height = 90)
   
 # To plot bricks of Ab regions
   
@@ -368,21 +244,19 @@ pisa_ligand_plot_1.tib <- pisa_filelist_long_sel_regionsum %>% dplyr::filter(., 
   #geom_text( aes(label = res1AA, y = -5), position = position_dodge(0.9), vjust = 0) +
   facet_grid(obj ~ chain)
   #print(molprob_filelistdata_int_sum_ligres_area_sum_plot.tib)
-  ggsave(file="ggplot_pisa_bsa_3.jpeg", plot=pisa_ligand_plot_3.tib,device="jpeg", width = 90, height = 180, units = c("mm"))
-  ggsave(file="ggplot_pisa_bsa_3.ps", plot=pisa_ligand_plot_3.tib,device="ps", width = 90, height = 180, units = c("mm"))
+  save_plot_jpeg_ps(pisa_ligand_plot_3.tib, "ggplot_pisa_bsa_3", width = 90, height = 180)
 ```
 
 
 ```{r PisaStats}
-#pisa_filelist_long_sel_resP
-pisa_filelist_long_sel_resP_chain.stats <- pisa_filelist_long_sel_regionsum %>% ungroup() %>% dplyr::group_by(., obj, arpeggio, chain, region_col) %>% dplyr::summarize(., bsa_region_chain=sum(bsa_sum)) %>% dplyr::mutate(., bsa_arpeggio=sum(bsa_region_chain)) %>% dplyr::mutate(., bsa_perc_chain=(round((bsa_region_chain/bsa_arpeggio)*100, 1) )) 
+pisa_filelist_long_sel_resP.stats <- compute_pisa_region_stats(
+  pisa_filelist_long_sel_regionsum = pisa_filelist_long_sel_regionsum
+)
 
-pisa_filelist_long_sel_resP.stats <- pisa_filelist_long_sel_resP_chain.stats %>% ungroup() %>% dplyr::group_by(., obj, arpeggio, region_col) %>% dplyr::summarize(., bsa_arp_chain = sum(bsa_arpeggio)) %>% ungroup %>% dplyr::group_by(., obj, arpeggio, region_col) %>% dplyr::group_by(., obj, arpeggio, region_col) %>% right_join(., pisa_filelist_long_sel_resP_chain.stats) %>% dplyr::mutate(., bsa_perc_region= (round((bsa_region_chain/bsa_arp_chain)*100, 1))) %>% dplyr::arrange(., obj, arpeggio, chain, region_col)
-
-#pisa_filelist_long_sel_resP_50.stats <- pisa_filelist_long_sel_resP.stats %>% ungroup() %>% dplyr::filter(., bsa_perc_sum > 49.99) %>% dplyr::group_by(., obj, arpeggio, region_col) %>% dplyr::summarize(., bsa_region=sum(bsa_sum)) %>% dplyr::mutate(., bsa_arpeggio=sum(bsa_region)) %>% dplyr::mutate(., bsa_perc=(bsa_region/bsa_arpeggio)*100)
-
-datatable(pisa_filelist_long_sel_resP.stats, filter = 'top') 
-datatable(pisa_filelist_long_sel_resP.stats, filter = 'top') %>% saveWidget(., file = "table_pisastats.html", selfcontained = TRUE)
+write_pisa_stats_table(
+  pisa_filelist_long_sel_resP.stats = pisa_filelist_long_sel_resP.stats,
+  output_file = "table_pisastats.html"
+)
 
 ```
 
@@ -405,9 +279,7 @@ However, I wanted to integrate the interactions within my own PyMol sessions and
 #### To process the Arpeggio output
 
 ```{r}
-if (!dir.exists("./data_arpeggio")) {
-  dir.create("./data_arpeggio")
-}
+ensure_dir("./data_arpeggio")
 
 ```
 
@@ -518,32 +390,24 @@ pdbsum_filelist.tib <- as_tibble(pdbsum_filelist) %>% separate(., value, into = 
 
 #pdbsum_filelist_atomlevel.old <- pdbsum_filelist_atomlevel.tib
 
-pdbsum_filelist_levels.tib <- pdbsum_filelist.tib %>% dplyr::select(., obj, arpeggio, data_boxplot) %>% unite(., obj_arpeggio, c("obj", "arpeggio")) %>% dplyr::mutate(., data_atomlevel = purrr::map(data_boxplot, ~arpeggio_atomlevel_f(.))) %>% dplyr::mutate(., data_reslevel = purrr::map(data_atomlevel, ~arpeggio_reslevel_f(.))) %>% dplyr::mutate(., data_liglevel = purrr::map(data_reslevel, ~arpeggio_liglevel_f(.)))
-
-pdbsum_filelist_atomlevel.tib <- pdbsum_filelist_levels.tib %>% dplyr::select(., obj_arpeggio, data_atomlevel) %>% unnest(., c("data_atomlevel"))
-
-#pdbsum_filelist_reslevel.old <- pdbsum_filelist_reslevel.tib
-
-pdbsum_filelist_reslevel.tib <- pdbsum_filelist_levels.tib %>% dplyr::select(., obj_arpeggio, data_reslevel) %>% unnest(., c("data_reslevel"))
-
-pdbsum_filelist_liglevel.tib <- pdbsum_filelist_levels.tib %>% dplyr::select(., obj_arpeggio, data_liglevel) %>% unnest(., c("data_liglevel"))
-
-get_column_value <- function(df, filterme){
-  out <- df %>% dplyr::filter(., binder == filterme) %>% pull(sumbinder)
-  return(out)
-}
-
 arpfeature_tib <- tribble(~ranktype, ~name, ~arpclass,
                        "distance", "WeakPolar", "weak",
                        "distance", "weakHydrogenBond", "weak")
 
-feature_contacts.tib <- pdbsum_filelist.tib %>% dplyr::select(., obj, arpeggio, filetype, data_long2) %>% unnest(., data_long2) %>% dplyr::select(., !data_ranked) %>% unnest(., data) %>% dplyr::group_by(., obj, arpeggio, chain1, ranktype, name) %>% tally(., name = "sumcount") %>% left_join(., arpfeature_tib) %>% replace_na(., list(arpclass = "strong"))
+arpeggio_exports <- process_arpeggio_pipeline(
+  pdbsum_filelist.tib = pdbsum_filelist.tib,
+  PDBsum_sort_tribble = PDBsum_sort_tribble,
+  arpfeature_tib = arpfeature_tib,
+  arpeggio_chain_filter = arpeggio_chain_filter
+)
 
-feature_contacts_residue.tib <- pdbsum_filelist.tib %>% dplyr::select(., obj, arpeggio, filetype, data_long2) %>% unnest(., data_long2) %>% dplyr::select(., !data_ranked) %>% unnest(., data) %>% dplyr::group_by(., obj, arpeggio, chain1, number1, ranktype, name) %>% tally(., name = "sumcount") %>% left_join(., arpfeature_tib) %>% replace_na(., list(arpclass = "strong"))
-
-# edited 
-
-feature_contacts_contact.map <- pdbsum_filelist.tib %>% dplyr::select(., obj, arpeggio, filetype, data_long2) %>% unnest(., data_long2) %>% dplyr::select(., !data_ranked) %>% unnest(., data) %>% left_join(., arpeggio_chain_filter) %>% drop_na(., keep) %>% dplyr::select(., !c("keep")) %>% dplyr::group_by(., obj, arpeggio, chain1, number1, chain2, number2, ranktype, name) %>% tally(., name = "sumcount") %>% left_join(., arpfeature_tib) %>% replace_na(., list(arpclass = "strong"))
+pdbsum_filelist_levels.tib <- arpeggio_exports$pdbsum_filelist_levels.tib
+pdbsum_filelist_atomlevel.tib <- arpeggio_exports$pdbsum_filelist_atomlevel.tib
+pdbsum_filelist_reslevel.tib <- arpeggio_exports$pdbsum_filelist_reslevel.tib
+pdbsum_filelist_liglevel.tib <- arpeggio_exports$pdbsum_filelist_liglevel.tib
+feature_contacts.tib <- arpeggio_exports$feature_contacts.tib
+feature_contacts_residue.tib <- arpeggio_exports$feature_contacts_residue.tib
+feature_contacts_contact.map <- arpeggio_exports$feature_contacts_contact.map
 
 #pdbsum_filelist_bbsclevel_bbsconly_perc <- pdbsum_filelist_bbsclevel_bbsconly.tib %>% dplyr::summarize(., sumbinder = sum(sumcount)) %>% ungroup() %>% dplyr::select(., binder, sumbinder) %>% pivot_wider(., names_from =c("binder"), values_from = c("sumbinder")) %>% dplyr::mutate(., dar_tcr = dar/tcr, dar_fab = dar/fab)
 ```
@@ -551,38 +415,20 @@ feature_contacts_contact.map <- pdbsum_filelist.tib %>% dplyr::select(., obj, ar
 #### To summarize the Arpeggio interactions
 
 ```{r}
-yrb_yellow <- rgb(245, 163, 19, maxColorValue = 255, name = "yrb_yellow") %>% enframe() %>% pull(value)
-yrb_lyellow <- rgb(245, 201, 19, maxColorValue = 255, name = "yrb_lyellow") %>% enframe() %>% pull(value)
-yrb_l2yellow <- rgb(245, 239, 19, maxColorValue = 255, name = "yrb_l2yellow") %>% enframe() %>% pull(value)
-yrb_red <- rgb(241, 98, 99, maxColorValue = 255, name = "yrb_red") %>% enframe() %>% pull(value)
-yrb_lred <- rgb(247, 168, 169,maxColorValue = 255, name = "yrb_lred") %>% enframe() %>% pull(value)
-yrb_blue <- rgb(61, 130, 196, maxColorValue = 255, name = "yrb_blue") %>% enframe() %>% pull(value)
-yrb_lblue <- rgb(120, 168, 214, maxColorValue = 255, name = "yrb_lblue") %>% enframe() %>% pull(value)
-yrb_neutral <- rgb(216, 191, 216, maxColorValue = 255, name = "yrb_tan") %>% enframe() %>% pull(value) #col2rgb("tan")
-yrb_pisa <- rgb(202, 125, 204, maxColorValue = 255, name = "yrb_pisa") %>% enframe() %>% pull(value) #col2rgb("tan")
+# Load YRB colors and Arpeggio color tribble from shared config
+yrb <- get_yrb_colors()
+arpeggio_sort_tribble <- get_arpeggio_color_tribble()
 
-#sorting data according to PIC-type
-arpeggio_sort_tribble <- tribble(~PIC_type, ~PIC_gencolor, ~PIC_typecolor, 
-                        "Hydrophobic", yrb_yellow, yrb_yellow,
-                        "Hydrogen", yrb_blue, yrb_blue,
-                        "Ionic", yrb_blue, yrb_lblue,
-                        "Aromatic", yrb_yellow, yrb_lyellow,
-                        "Cation-Pi", yrb_yellow, yrb_l2yellow,
-                        "Other", yrb_neutral, yrb_neutral)
-
-
-
+# Extract named vectors for coloring
 arpeggio_coltribble <- arpeggio_sort_tribble
-
-
-arpeggio_AA_tribble <- arpeggio_coltribble %>% right_join(., AA_tribble) %>% dplyr::mutate(AA_typecolor = case_when(AAcolor == "NEG" ~ yrb_red, TRUE ~ PIC_typecolor))
-
 arpeggio_coltribble_col <- arpeggio_coltribble %>% dplyr::select(PIC_type, PIC_typecolor) %>% deframe(.)
 arpeggio_coltribble_col_all <- arpeggio_coltribble %>% dplyr::select(PIC_type, PIC_gencolor) %>% deframe(.)
 
+arpeggio_AA_tribble <- arpeggio_coltribble %>% right_join(., AA_tribble) %>% dplyr::mutate(AA_typecolor = case_when(AAcolor == "NEG" ~ yrb$yrb_red, TRUE ~ PIC_typecolor))
+
 arpeggio_AA_tribble_col <- arpeggio_AA_tribble %>% dplyr::select(resaa, AA_typecolor) %>% deframe(.)
 
-pdbsum_filelist_preboxplot.tib <- pdbsum_filelist_liglevel.tib #%>% left_join(., arpeggio_sel_filelist.tib) %>% dplyr::mutate(., IMGT = str_extract(pyname, "MHCh1|MHCh2|PEP"))
+pdbsum_filelist_preboxplot.tib <- pdbsum_filelist_liglevel.tib
 
 #sel_binder_chains_filter.tib <- sel_binder_chains.tib %>% dplyr::select(., binder, rec_chain = chain, number2 = resid, resaa)
 
@@ -598,8 +444,10 @@ To create res-level stats table
 
 pdbsum_filelist_preboxplot.stats <- pdbsum_filelist_preboxplot.tib %>% dplyr::filter(., !grepl('Proximal|weak|Weak', name))
 
-datatable(pdbsum_filelist_preboxplot.stats, filter = 'top') 
-datatable(pdbsum_filelist_preboxplot.stats, filter = 'top') %>% saveWidget(., file = "table_arp_resstats.html", selfcontained = TRUE)
+write_datatable_html(
+  data = pdbsum_filelist_preboxplot.stats,
+  output_file = "table_arp_resstats.html"
+)
 
 
 ```
@@ -615,8 +463,10 @@ datatable(pdbsum_filelist_preboxplot.stats, filter = 'top') %>% saveWidget(., fi
 
 PDBsum_rank_tribble.stats <- PDBsum_rank_tribble %>% dplyr::filter(., ranktype != "distance") %>% dplyr::arrange(., ranktype, rank)
 
-datatable(PDBsum_rank_tribble.stats, filter = 'top') 
-datatable(PDBsum_rank_tribble.stats, filter = 'top') %>% saveWidget(., file = "table_arp_rank.html", selfcontained = TRUE)
+write_datatable_html(
+  data = PDBsum_rank_tribble.stats,
+  output_file = "table_arp_rank.html"
+)
 
 
 ```
@@ -626,7 +476,8 @@ datatable(PDBsum_rank_tribble.stats, filter = 'top') %>% saveWidget(., file = "t
 ```{r}
 arpeggio_assign_color <- pdbsum_filelist_preboxplot.tib %>% dplyr::group_by(., name) %>% dplyr::summarize() %>% dplyr::mutate(., PIC_type = case_when(name == "Carbonyl" ~ "Other", name == "HydrogenBond" ~ "Hydrogen", name == "Polar" ~ "Hydrogen", name == "Proximal" ~ "Other", name == "VdW" ~ "Other", name == "vdW_Clash" ~ "Other", name == "weakHydrogenBond" ~ "Other", name == "WeakPolar" ~ "Other", TRUE ~ name)) %>% left_join(., arpeggio_coltribble) %>% dplyr::mutate(., priority = case_when(name == "Proximal" ~ "a", name == "Hydrophobic" ~ "b", name == "Aromatic" ~ "c", name == "HydrogenBond" ~ "d", name == "Ionic" ~ "e", name == "Polar" ~ "f", name == "weakHydrogenBond" ~ "g", name == "WeakPolar" ~ "h", name == "Carbonyl" ~ "i", name == "WeakPolar" ~ "j", TRUE ~ "k")) %>% unite(., col = "name_priority", c("priority", "name"), sep = ".", remove = FALSE) %>% dplyr::mutate(., facetPIC = case_when(name_priority == "c.Aromatic" ~ "b.Hydrophobic", name_priority == "e.Ionic" ~ "d.HydrogenBond", TRUE ~ name_priority)) %>% dplyr::mutate(., filled = case_when(PIC_type == "Aromatic" ~ "N", PIC_type == "Other" ~ "Y", PIC_type == "Ionic" & name == "Ionic" ~ "N", PIC_type == "Ionic" & name == "HydrogenBond" ~ "Y", PIC_type == "Hydrophobic" ~ "Y", PIC_type == "Hydrogen" ~ "Y"))
 
-arpeggio_assign_color_col <- arpeggio_assign_color %>% dplyr::select(., name, PIC_typecolor) %>% deframe(.)
+arpeggio_assign_color_col <- arpeggio_assign_color %>% dplyr::select(., name=PIC_type, PIC_typecolor) %>% deframe(.)
+arpeggio_assign_color_col_res <- arpeggio_assign_color %>% dplyr::select(., name, PIC_typecolor) %>% deframe(.)
   
 # new plot (interactions not ranked), in accordance with Arpeggio output
 # priority filters out only feature contacts without weak, carbonyl or polar contacts. 
@@ -642,16 +493,17 @@ feature_contacts_residue_contactplot.tib <- feature_contacts_residue_contactplot
   scale_y_continuous("Ligand residue number") +
   coord_cartesian(xlim = c(300, 550)) +
   #coord_cartesian(xlim = c(0,15)) +
-  scale_color_manual(values = arpeggio_assign_color_col, "Arpeggio legend") +
+  scale_color_manual(values = arpeggio_assign_color_col_res, "Arpeggio legend") +
   theme_light() +
   #theme(legend.position = "none") +
   facet_grid(chain1 ~ ., scales = "free_x")
 #print(filelistdata_molprob_int_sum_ligres2_boxplot.tib)
-  ggsave(file="ggplot_feature_contacts_residue_contmap.jpeg", plot=feature_contacts_residue_contactplot.tib,device="jpeg", width = 240, height = 150, units = c("mm"))
-  ggsave(file="ggplot_feature_contacts_residue_contmap.ps", plot=feature_contacts_residue_contactplot.tib,device="ps", width = 240, height = 150, units = c("mm"))
+  save_plot_jpeg_ps(feature_contacts_residue_contactplot.tib, "ggplot_feature_contacts_residue_contmap", width = 240, height = 150)
   
-feature_contacts_residue_contactplot.plotly <- ggplotly(feature_contacts_residue_contactplot.tib)  
-htmlwidgets::saveWidget(feature_contacts_residue_contactplot.plotly, "feature_contacts_residue_contactplot.html")
+feature_contacts_residue_contactplot.plotly <- write_ggplotly_html(
+  plot_obj = feature_contacts_residue_contactplot.tib,
+  output_file = "feature_contacts_residue_contactplot.html"
+)
   
 ```
 
@@ -671,42 +523,17 @@ Go to the [interactive plot](feature_contacts_residue_contactplot.html) and hove
 
 feature_contacts_boxplot_sum_pre.tib <- feature_contacts.tib %>% dplyr::mutate(., scaling = case_when(name == "Proximal" ~ 0.2, TRUE ~ 1)) %>% dplyr::mutate(., count_scaled = sumcount*scaling) %>% dplyr::group_by(., obj, arpeggio, chain1, name) %>% dplyr::summarize(., sumcount=sum(sumcount)) %>% left_join(., arpeggio_assign_color) %>% dplyr::filter(., priority < "f") %>% dplyr::select(., !contains("empty")) 
 
-feature_contacts_boxplot_sum.tib <- feature_contacts_boxplot_sum_pre.tib %>% ggplot() + 
-  geom_col(data = . %>% dplyr::filter(.), aes(x=chain1, y = sumcount, fill=name)) +
-  #geom_col(data = . %>% dplyr::filter(.), aes(x=chain1, y = sumcount, colour=name)) +
-  #scale_size_area() +
-  #scale_x_continuous("residue number") +
-  #scale_y_continuous("interaction count") +
-  #coord_cartesian(xlim = c(0,15)) +
+feature_contacts_boxplot_sum.tib <- feature_contacts_boxplot_sum_pre.tib %>% ggplot(data = ., aes(x=chain1, y = sumcount, colour=PIC_type), fill=NA, linewidth=1, position="identity") + 
+  geom_col(data = . %>% dplyr::filter(., filled == "Y"), aes(x=chain1, y = sumcount, fill=PIC_type), colour = "black", linewidth=0.5, position="identity") +
+  geom_col(data = . %>% dplyr::filter(., filled == "N"), aes(x=chain1, y = sumcount, colour=PIC_type), fill=NA, linewidth=1, position="identity") +
   scale_fill_manual(values = arpeggio_assign_color_col, "Arpeggio legend") +
+  scale_colour_manual(values = arpeggio_assign_color_col, "Arpeggio legend") +
   theme_light() +
   #theme(legend.position = "none") +
   facet_grid(facetPIC ~ obj, scales = "free_y")
 #print(filelistdata_molprob_int_sum_ligres2_boxplot.tib)
-  ggsave(file="feature_contacts_boxplot_sum.jpeg", plot=feature_contacts_boxplot_sum.tib,device="jpeg", width = 90, height = 90, units = c("mm"))
-  ggsave(file="feature_contacts_boxplot_sum.ps", plot=feature_contacts_boxplot_sum.tib,device="ps", width = 90, height = 90, units = c("mm"))  
+  save_plot_jpeg_ps(feature_contacts_boxplot_sum.tib, "feature_contacts_boxplot_sum", width = 90, height = 90)
 
-```
-
-The following plot corresponds to `feature_contacts_boxplot_sum.jpeg`, but with ranked data.
-
-```{r eval=FALSE, echo=TRUE}
-# previous plot, not shown any longer.
-
-pdbsum_filelist_boxplot_sum.tib <- pdbsum_filelist_preboxplot.tib %>% separate(., obj_arpeggio, into = c("obj", "arpeggio"), sep="_") %>% dplyr::mutate(., number1 = as.numeric(number1))  %>% dplyr::mutate(., scaling = case_when(name == "Proximal" ~ 0.2, TRUE ~ 1)) %>% dplyr::mutate(., count_scaled = sumcount*scaling) %>% dplyr::group_by(., obj, arpeggio, chain1, name) %>% dplyr::summarize(., sumcount=sum(sumcount)) %>% left_join(., arpeggio_assign_color) %>% dplyr::filter(., priority < "f") %>% dplyr::select(., !contains("empty")) %>% ggplot() + 
-  geom_col(data = . %>% dplyr::filter(.), aes(x=chain1, y = sumcount, fill=name)) +
-  #geom_col(data = . %>% dplyr::filter(.), aes(x=chain1, y = sumcount, colour=name)) +
-  #scale_size_area() +
-  #scale_x_continuous("residue number") +
-  #scale_y_continuous("interaction count") +
-  #coord_cartesian(xlim = c(0,15)) +
-  scale_fill_manual(values = arpeggio_assign_color_col, "Arpeggio legend") +
-  theme_light() +
-  #theme(legend.position = "none") +
-  facet_grid(facetPIC ~ obj, scales = "free_y")
-#print(filelistdata_molprob_int_sum_ligres2_boxplot.tib)
-  ggsave(file="ggplot_ligres2_arpeggio_boxplot_sum.jpeg", plot=pdbsum_filelist_boxplot_sum.tib,device="jpeg", width = 90, height = 90, units = c("mm"))
-  ggsave(file="ggplot_ligres2_arpeggio_boxplot_sum.ps", plot=pdbsum_filelist_boxplot_sum.tib,device="ps", width = 90, height = 90, units = c("mm"))
 ```
 
 ———————————————————————————————————————————
@@ -726,9 +553,9 @@ arpeggio_object.trib <- tribble(~obj_arpeggio, ~obj_new,
 
 generate_arpeggio_contacts_f <- function(data, arpeggio_sel){
   data_in <- data %>% dplyr::filter(., arpeggio == {{arpeggio_sel}} )
-  data_proximal <- data_in %>% dplyr::filter(., name == "Proximal") %>% dplyr::mutate(., rowid = row_number())  %>% dplyr::mutate(., cmd = paste("distance ", obj_arpeggio, "_ prox_", rowid, ", ",selection1, ", ", selection2, ";", sep ="")) 
-  data_hydrophobic <- data_in %>% dplyr::filter(., name == "Aromatic" | name == "Hydrophobic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = paste("distance ", obj_arpeggio,"_hphobic_", rowid, ", " ,selection1, ", ", selection2, sep ="") )
-  data_hb <- data_in %>% dplyr::filter(., name == "HydrogenBond" | name == "Ionic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = paste("distance ", obj_arpeggio,"_hbond_", chain1, number1, chain2, number2, "_", rowid, ", " ,selection1, ", ", selection2, sep ="") )
+  data_proximal <- data_in %>% dplyr::filter(., name == "Proximal") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_ prox_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
+  data_hydrophobic <- data_in %>% dplyr::filter(., name == "Aromatic" | name == "Hydrophobic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_hphobic_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
+  data_hb <- data_in %>% dplyr::filter(., name == "HydrogenBond" | name == "Ionic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_hbond_", chain1, number1, chain2, number2, "_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
   data_out <- data_proximal %>% bind_rows(., data_hydrophobic) %>% bind_rows(., data_hb) #%>% dplyr::select(., name, cmd)
   return(data_out)
 }
@@ -738,15 +565,16 @@ tune_arpeggio_contacts_f <- function(data){
   return(data_out)
 }
 
-pdbsum_filelist_atomlevel_pre.pyscript <- pdbsum_filelist_atomlevel.tib %>% separate(., obj_arpeggio, into=c("obj", "arpeggio"), sep="_", remove=FALSE) %>% ungroup() %>% dplyr::mutate(., selection1 = paste(obj, " and ", id1, sep =""), selection2 = paste(obj, " and ", id2, sep ="")) %>% dplyr::mutate(., arpeggio_sel = arpeggio) %>% group_by(., obj, arpeggio_sel) %>% nest() %>% dplyr::mutate(., arp_sorted = purrr::pmap(list(data, arpeggio_sel), generate_arpeggio_contacts_f)) 
+arpeggio_pymol_exports <- build_arpeggio_pymol_exports(
+  pdbsum_filelist_atomlevel.tib = pdbsum_filelist_atomlevel.tib,
+  generate_contacts_fn = generate_arpeggio_contacts_f,
+  tune_contacts_fn = tune_arpeggio_contacts_f,
+  output_dir = "./pyscripts/"
+)
 
-pdbsum_filelist_atomlevel.pyscript <- pdbsum_filelist_atomlevel_pre.pyscript %>% dplyr::mutate(., filename = paste("./pyscripts/", obj, "_", arpeggio_sel, ".pml", sep ="")) %>% dplyr::mutate(., arp_filtered = purrr::map(arp_sorted, ~dplyr::filter(., name != "Proximal"))) %>% dplyr::mutate(., cmd_sel = purrr::map(arp_filtered, ~dplyr::select(., cmd)))
-
-pwalk(list(pdbsum_filelist_atomlevel.pyscript$cmd_sel, pdbsum_filelist_atomlevel.pyscript$filename), write_csv_pymol_f)
-
-pdbsum_filelist_tune.pyscript <- pdbsum_filelist_atomlevel.pyscript %>% dplyr::select(., !c("filename", "cmd_sel")) %>% dplyr::mutate(., cmd_sel = purrr::pmap(list(arp_filtered), tune_arpeggio_contacts_f)) %>% dplyr::mutate(., filename = paste("./pyscripts/", obj, "_", arpeggio_sel, "_tune.pml", sep =""))
-
-pwalk(list(pdbsum_filelist_tune.pyscript$cmd_sel, pdbsum_filelist_tune.pyscript$filename), write_csv_pymol_f)
+pdbsum_filelist_atomlevel_pre.pyscript <- arpeggio_pymol_exports$pdbsum_filelist_atomlevel_pre.pyscript
+pdbsum_filelist_atomlevel.pyscript <- arpeggio_pymol_exports$pdbsum_filelist_atomlevel.pyscript
+pdbsum_filelist_tune.pyscript <- arpeggio_pymol_exports$pdbsum_filelist_tune.pyscript
 
 ```
 
@@ -755,8 +583,10 @@ pwalk(list(pdbsum_filelist_tune.pyscript$cmd_sel, pdbsum_filelist_tune.pyscript$
 ```{r output=TRUE}
 pdbsum_filelist_atomlevel.stats <- pdbsum_filelist_atomlevel.tib %>% dplyr::select(., obj_arpeggio, id1, id2, number1, number2, name, name_cor) %>% dplyr::filter(., name_cor != "Proximal")
 
-datatable(pdbsum_filelist_atomlevel.stats, filter = 'top') 
-datatable(pdbsum_filelist_atomlevel.stats, filter = 'top') %>% saveWidget(., file = "table_arp_stats.html", selfcontained = TRUE)
+write_datatable_html(
+  data = pdbsum_filelist_atomlevel.stats,
+  output_file = "table_arp_stats.html"
+)
 ```
 
 The the PyMol script can be continued to scene_012 in order to visualize the hydrophobic and H bond contacts on the focus region.

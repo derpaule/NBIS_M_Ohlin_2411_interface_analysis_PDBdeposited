@@ -1,0 +1,1316 @@
+"0","# Initialize renv at the root: "
+"0","renv::init()"
+"1","WARNING: One or more problems were discovered while enumerating dependencies.
+
+# /home/rstudio/NBIS_M_Ohlin_2411_interface_analysis_vscoded/R/pml_templates.R --------
+Error: '\{' is an unrecognized escape in character string (<input>:7:34)
+
+Please see `]8;;x-r-help:renv::dependencies?renv::dependencies]8;;` for more information.
+
+"
+"0","y"
+"1","
+"
+"1","This project already has a lockfile. What would you like to do?"
+"1"," "
+"1","
+"
+"1",""
+"1","
+"
+"1","1: Restore the project from the lockfile."
+"1","
+"
+"1","2: Discard the lockfile and re-initialize the project."
+"1","
+"
+"1","3: Activate the project without snapshotting or installing any packages."
+"1","
+"
+"1","4: Abort project initialization."
+"1","
+"
+"1",""
+"1","
+"
+"0","1"
+"1","The following required system packages are not installed:
+- cmake  [required by nloptr]
+The R packages depending on these system packages may fail to install.
+
+"
+"1","An administrator can install these packages with:
+- sudo apt install cmake
+
+"
+"1","The following package(s) will be updated:
+"
+"1","
+"
+"1","# CRAN -----------------------------------------------------------------------
+"
+"1","- abind            [* -> 1.4-8]
+"
+"1","- bio3d            [* -> 2.4-5]
+"
+"1","- car              [* -> 3.1-5]
+"
+"1","- carData          [* -> 3.0-6]
+"
+"1","- clue             [* -> 0.3-67]
+"
+"1","- colorspace       [* -> 2.1-2]
+"
+"1","- corrplot         [* -> 0.95]
+"
+"1","- cowplot          [* -> 1.2.0]
+"
+"1","- crosstalk        [* -> 1.2.2]
+"
+"1","- datapasta        [* -> 3.1.0]
+"
+"1","- Deriv            [* -> 4.2.0]
+"
+"1","- doBy             [* -> 4.7.1]
+"
+"1","- DT               [* -> 0.34.0]
+"
+"1","- egg              [* -> 0.4.5]
+"
+"1","- forecast         [* -> 9.0.1]
+"
+"1","- formattable      [* -> 0.2.1]
+"
+"1","- Formula          [* -> 1.2-5]
+"
+"1","- fracdiff         [* -> 1.5-3]
+"
+"1","- ggforce          [* -> 0.5.0]
+"
+"1","- ggpubr           [* -> 0.6.3]
+"
+"1","- ggrepel          [* -> 0.9.7]
+"
+"1","- ggsci            [* -> 4.2.0]
+"
+"1","- ggsignif         [* -> 0.6.4]
+"
+"1","- gridExtra        [* -> 2.3]
+"
+"1","- htmlwidgets      [* -> 1.6.4]
+"
+"1","- kableExtra       [* -> 1.4.0]
+"
+"1","- later            [* -> 1.4.8]
+"
+"1","- lazyeval         [* -> 0.2.2]
+"
+"1","- lme4             [* -> 2.0-1]
+"
+"1","- lmtest           [* -> 0.9-40]
+"
+"1","- MatrixModels     [* -> 0.5-4]
+"
+"1","- microbenchmark   [* -> 1.5.0]
+"
+"1","- minqa            [* -> 1.2.8]
+"
+"1","- nloptr           [* -> 2.2.1]
+"
+"1","- numDeriv         [* -> 2016.8-1.1]
+"
+"1","- officer          [* -> 0.7.3]
+"
+"1","- otel             [* -> 0.2.0]
+"
+"1","- pbkrtest         [* -> 0.5.5]
+"
+"1","- polyclip         [* -> 1.10-7]
+"
+"1","- polynom          [* -> 1.4-1]
+"
+"1","- promises         [* -> 1.5.0]
+"
+"1","- quantreg         [* -> 6.1]
+"
+"1","- rbibutils        [* -> 2.4.1]
+"
+"1","- Rcpp             [* -> 1.1.1]
+"
+"1","- RcppArmadillo    [* -> 15.2.3-1]
+"
+"1","- RcppEigen        [* -> 0.3.4.0.2]
+"
+"1","- Rdpack           [* -> 2.6.6]
+"
+"1","- reformulas       [* -> 0.4.4]
+"
+"1","- rstatix          [* -> 0.7.3]
+"
+"1","- SparseM          [* -> 1.84-2]
+"
+"1","- statip           [* -> 0.2.3]
+"
+"1","- svglite          [* -> 2.2.2]
+"
+"1","- timeDate         [* -> 4052.112]
+"
+"1","- tweenr           [* -> 2.0.3]
+"
+"1","- urca             [* -> 1.3-4]
+"
+"1","- zip              [* -> 2.3.3]
+"
+"1","- zoo              [* -> 1.8-15]
+"
+"1","
+"
+"1","# RSPM -----------------------------------------------------------------------
+"
+"1","- askpass          [* -> 1.2.1]
+"
+"1","- backports        [* -> 1.5.0]
+"
+"1","- base64enc        [* -> 0.1-3]
+"
+"1","- bit              [* -> 4.6.0]
+"
+"1","- bit64            [* -> 4.6.0-1]
+"
+"1","- blob             [* -> 1.2.4]
+"
+"1","- broom            [* -> 1.0.11]
+"
+"1","- bslib            [* -> 0.9.0]
+"
+"1","- cachem           [* -> 1.1.0]
+"
+"1","- callr            [* -> 3.7.6]
+"
+"1","- cellranger       [* -> 1.1.0]
+"
+"1","- cli              [* -> 3.6.5]
+"
+"1","- clipr            [* -> 0.8.0]
+"
+"1","- conflicted       [* -> 1.2.0]
+"
+"1","- cpp11            [* -> 0.5.2]
+"
+"1","- crayon           [* -> 1.5.3]
+"
+"1","- curl             [* -> 7.0.0]
+"
+"1","- data.table       [* -> 1.18.0]
+"
+"1","- DBI              [* -> 1.2.3]
+"
+"1","- dbplyr           [* -> 2.5.1]
+"
+"1","- digest           [* -> 0.6.39]
+"
+"1","- dplyr            [* -> 1.1.4]
+"
+"1","- dtplyr           [* -> 1.3.2]
+"
+"1","- evaluate         [* -> 1.0.5]
+"
+"1","- farver           [* -> 2.1.2]
+"
+"1","- fastmap          [* -> 1.2.0]
+"
+"1","- fontawesome      [* -> 0.5.3]
+"
+"1","- forcats          [* -> 1.0.1]
+"
+"1","- fs               [* -> 1.6.6]
+"
+"1","- gargle           [* -> 1.6.0]
+"
+"1","- generics         [* -> 0.1.4]
+"
+"1","- ggplot2          [* -> 4.0.1]
+"
+"1","- glue             [* -> 1.8.0]
+"
+"1","- googledrive      [* -> 2.1.2]
+"
+"1","- googlesheets4    [* -> 1.1.2]
+"
+"1","- gtable           [* -> 0.3.6]
+"
+"1","- haven            [* -> 2.5.5]
+"
+"1","- highr            [* -> 0.11]
+"
+"1","- hms              [* -> 1.1.4]
+"
+"1","- htmltools        [* -> 0.5.9]
+"
+"1","- httr             [* -> 1.4.7]
+"
+"1","- ids              [* -> 1.0.1]
+"
+"1","- isoband          [* -> 0.3.0]
+"
+"1","- jquerylib        [* -> 0.1.4]
+"
+"1","- jsonlite         [* -> 2.0.0]
+"
+"1","- knitr            [* -> 1.51]
+"
+"1","- labeling         [* -> 0.4.3]
+"
+"1","- lifecycle        [* -> 1.0.4]
+"
+"1","- lubridate        [* -> 1.9.4]
+"
+"1","- magrittr         [* -> 2.0.4]
+"
+"1","- memoise          [* -> 2.0.1]
+"
+"1","- mime             [* -> 0.13]
+"
+"1","- modelr           [* -> 0.1.11]
+"
+"1","- openssl          [* -> 2.3.4]
+"
+"1","- pillar           [* -> 1.11.1]
+"
+"1","- pkgconfig        [* -> 2.0.3]
+"
+"1","- prettyunits      [* -> 1.2.0]
+"
+"1","- processx         [* -> 3.8.6]
+"
+"1","- progress         [* -> 1.2.3]
+"
+"1","- ps               [* -> 1.9.1]
+"
+"1","- purrr            [* -> 1.2.0]
+"
+"1","- R6               [* -> 2.6.1]
+"
+"1","- ragg             [* -> 1.5.0]
+"
+"1","- rappdirs         [* -> 0.3.3]
+"
+"1","- RColorBrewer     [* -> 1.1-3]
+"
+"1","- readr            [* -> 2.1.6]
+"
+"1","- readxl           [* -> 1.4.5]
+"
+"1","- rematch          [* -> 2.0.0]
+"
+"1","- rematch2         [* -> 2.1.2]
+"
+"1","- reprex           [* -> 2.1.1]
+"
+"1","- rlang            [* -> 1.1.6]
+"
+"1","- rmarkdown        [* -> 2.30]
+"
+"1","- rstudioapi       [* -> 0.17.1]
+"
+"1","- rvest            [* -> 1.0.5]
+"
+"1","- S7               [* -> 0.2.1]
+"
+"1","- sass             [* -> 0.4.10]
+"
+"1","- scales           [* -> 1.4.0]
+"
+"1","- selectr          [* -> 0.5-1]
+"
+"1","- stringi          [* -> 1.8.7]
+"
+"1","- stringr          [* -> 1.6.0]
+"
+"1","- sys              [* -> 3.4.3]
+"
+"1","- systemfonts      [* -> 1.3.1]
+"
+"1","- textshaping      [* -> 1.0.4]
+"
+"1","- tibble           [* -> 3.3.0]
+"
+"1","- tidyr            [* -> 1.3.2]
+"
+"1","- tidyselect       [* -> 1.2.1]
+"
+"1","- tidyverse        [* -> 2.0.0]
+"
+"1","- timechange       [* -> 0.3.0]
+"
+"1","- tinytex          [* -> 0.58]
+"
+"1","- tzdb             [* -> 0.5.0]
+"
+"1","- utf8             [* -> 1.2.6]
+"
+"1","- uuid             [* -> 1.2-1]
+"
+"1","- vctrs            [* -> 0.6.5]
+"
+"1","- viridisLite      [* -> 0.4.2]
+"
+"1","- vroom            [* -> 1.6.7]
+"
+"1","- withr            [* -> 3.0.2]
+"
+"1","- xfun             [* -> 0.55]
+"
+"1","- xml2             [* -> 1.5.1]
+"
+"1","- yaml             [* -> 2.3.12]
+"
+"1","
+"
+"1","# Downloading packages -------------------------------------------------------
+"
+"1","- Querying repositories for available source packages ... "
+"1","Done!
+"
+"1","- Downloading DBI 1.2.3 from RSPM ...           "
+"1","OK [895.4 Kb in 0.76s]
+"
+"1","- Downloading DT 0.34.0 from CRAN ...           "
+"1","OK [1.7 Mb in 0.67s]
+"
+"1","- Downloading crosstalk 1.2.2 from CRAN ...     "
+"1","OK [402.4 Kb in 0.59s]
+"
+"1","- Downloading htmltools 0.5.9 from RSPM ...     "
+"1","OK [346.5 Kb in 0.58s]
+"
+"1","- Downloading base64enc 0.1-3 from RSPM ...     "
+"1","OK [26 Kb in 0.55s]
+"
+"1","- Downloading digest 0.6.39 from RSPM ...       "
+"1","OK [225 Kb in 0.56s]
+"
+"1","- Downloading fastmap 1.2.0 from RSPM ...       "
+"1","OK [64.5 Kb in 0.55s]
+"
+"1","- Downloading rlang 1.1.6 from RSPM ...         "
+"1","OK [1.5 Mb in 0.64s]
+"
+"1","- Downloading jsonlite 2.0.0 from RSPM ...      "
+"1","OK [1 Mb in 0.62s]
+"
+"1","- Downloading lazyeval 0.2.2 from CRAN ...      "
+"1","OK [153.7 Kb in 0.56s]
+"
+"1","- Downloading R6 2.6.1 from RSPM ...            "
+"1","OK [84.8 Kb in 0.55s]
+"
+"1","- Downloading htmlwidgets 1.6.4 from CRAN ...   "
+"1","OK [795.9 Kb in 0.61s]
+"
+"1","- Downloading knitr 1.51 from RSPM ...          "
+"1","OK [1 Mb in 0.6s]
+"
+"1","- Downloading evaluate 1.0.5 from RSPM ...      "
+"1","OK [100.4 Kb in 0.57s]
+"
+"1","- Downloading highr 0.11 from RSPM ...          "
+"1","OK [36.6 Kb in 0.55s]
+"
+"1","- Downloading xfun 0.55 from RSPM ...           "
+"1","OK [580.6 Kb in 0.72s]
+"
+"1","- Downloading yaml 2.3.12 from RSPM ...         "
+"1","OK [118.3 Kb in 0.57s]
+"
+"1","- Downloading rmarkdown 2.30 from RSPM ...      "
+"1","OK [2.5 Mb in 0.65s]
+"
+"1","- Downloading bslib 0.9.0 from RSPM ...         "
+"1","OK [5.4 Mb in 0.68s]
+"
+"1","- Downloading cachem 1.1.0 from RSPM ...        "
+"1","OK [65.9 Kb in 0.56s]
+"
+"1","- Downloading jquerylib 0.1.4 from RSPM ...     "
+"1","OK [514.5 Kb in 0.59s]
+"
+"1","- Downloading lifecycle 1.0.4 from RSPM ...     "
+"1","OK [122.1 Kb in 0.61s]
+"
+"1","- Downloading cli 3.6.5 from RSPM ...           "
+"1","OK [1.3 Mb in 0.63s]
+"
+"1","- Downloading glue 1.8.0 from RSPM ...          "
+"1","OK [164.2 Kb in 0.57s]
+"
+"1","- Downloading memoise 2.0.1 from RSPM ...       "
+"1","OK [47.7 Kb in 0.55s]
+"
+"1","- Downloading mime 0.13 from RSPM ...           "
+"1","OK [43.5 Kb in 0.55s]
+"
+"1","- Downloading sass 0.4.10 from RSPM ...         "
+"1","OK [2.3 Mb in 0.64s]
+"
+"1","- Downloading fs 1.6.6 from RSPM ...            "
+"1","OK [302.8 Kb in 0.59s]
+"
+"1","- Downloading rappdirs 0.3.3 from RSPM ...      "
+"1","OK [44.2 Kb in 0.56s]
+"
+"1","- Downloading fontawesome 0.5.3 from RSPM ...   "
+"1","OK [1.3 Mb in 0.63s]
+"
+"1","- Downloading tinytex 0.58 from RSPM ...        "
+"1","OK [140.4 Kb in 0.57s]
+"
+"1","- Downloading magrittr 2.0.4 from RSPM ...      "
+"1","OK [216.2 Kb in 0.57s]
+"
+"1","- Downloading promises 1.5.0 from CRAN ...      "
+"1","OK [1.6 Mb in 0.62s]
+"
+"1","- Downloading later 1.4.8 from CRAN ...         "
+"1","OK [151 Kb in 0.61s]
+"
+"1","- Downloading Rcpp 1.1.1 from CRAN ...          "
+"1","OK [2.1 Mb in 0.62s]
+"
+"1","- Downloading otel 0.2.0 from CRAN ...          "
+"1","OK [273.1 Kb in 0.58s]
+"
+"1","- Downloading Deriv 4.2.0 from CRAN ...         "
+"1","OK [149 Kb in 0.54s]
+"
+"1","- Downloading Formula 1.2-5 from CRAN ...       "
+"1","OK [155.4 Kb in 0.55s]
+"
+"1","- Downloading MatrixModels 0.5-4 from CRAN ...  "
+"1","OK [398.9 Kb in 0.58s]
+"
+"1","- Downloading RColorBrewer 1.1-3 from RSPM ...  "
+"1","OK [50.6 Kb in 0.54s]
+"
+"1","- Downloading RcppArmadillo 15.2.3-1 from CRAN ... "
+"1","OK [1.6 Mb in 1.5s]
+"
+"1","- Downloading RcppEigen 0.3.4.0.2 from CRAN ... "
+"1","OK [1.8 Mb in 0.62s]
+"
+"1","- Downloading Rdpack 2.6.6 from CRAN ...        "
+"1","OK [622.5 Kb in 0.67s]
+"
+"1","- Downloading rbibutils 2.4.1 from CRAN ...     "
+"1","OK [1.1 Mb in 0.61s]
+"
+"1","- Downloading S7 0.2.1 from RSPM ...            "
+"1","OK [317.5 Kb in 0.58s]
+"
+"1","- Downloading SparseM 1.84-2 from CRAN ...      "
+"1","OK [867.2 Kb in 0.6s]
+"
+"1","- Downloading abind 1.4-8 from CRAN ...         "
+"1","OK [63.4 Kb in 0.55s]
+"
+"1","- Downloading askpass 1.2.1 from RSPM ...       "
+"1","OK [21.4 Kb in 0.53s]
+"
+"1","- Downloading sys 3.4.3 from RSPM ...           "
+"1","OK [39.8 Kb in 0.54s]
+"
+"1","- Downloading backports 1.5.0 from RSPM ...     "
+"1","OK [113.2 Kb in 0.56s]
+"
+"1","- Downloading bio3d 2.4-5 from CRAN ...         "
+"1","OK [2.9 Mb in 1.5s]
+"
+"1","- Downloading bit 4.6.0 from RSPM ...           "
+"1","OK [613.4 Kb in 0.59s]
+"
+"1","- Downloading bit64 4.6.0-1 from RSPM ...       "
+"1","OK [481 Kb in 0.59s]
+"
+"1","- Downloading blob 1.2.4 from RSPM ...          "
+"1","OK [46.4 Kb in 0.56s]
+"
+"1","- Downloading vctrs 0.6.5 from RSPM ...         "
+"1","OK [1.3 Mb in 0.63s]
+"
+"1","- Downloading broom 1.0.11 from RSPM ...        "
+"1","OK [1.7 Mb in 1.0s]
+"
+"1","- Downloading dplyr 1.1.4 from RSPM ...         "
+"1","OK [1.4 Mb in 0.64s]
+"
+"1","- Downloading generics 0.1.4 from RSPM ...      "
+"1","OK [78.5 Kb in 0.55s]
+"
+"1","- Downloading pillar 1.11.1 from RSPM ...       "
+"1","OK [645 Kb in 0.59s]
+"
+"1","- Downloading utf8 1.2.6 from RSPM ...          "
+"1","OK [148.2 Kb in 0.56s]
+"
+"1","- Downloading tibble 3.3.0 from RSPM ...        "
+"1","OK [664.4 Kb in 0.61s]
+"
+"1","- Downloading pkgconfig 2.0.3 from RSPM ...     "
+"1","OK [17.7 Kb in 0.54s]
+"
+"1","- Downloading tidyselect 1.2.1 from RSPM ...    "
+"1","OK [220 Kb in 0.58s]
+"
+"1","- Downloading withr 3.0.2 from RSPM ...         "
+"1","OK [218.6 Kb in 0.58s]
+"
+"1","- Downloading purrr 1.2.0 from RSPM ...         "
+"1","OK [540.6 Kb in 1.4s]
+"
+"1","- Downloading stringr 1.6.0 from RSPM ...       "
+"1","OK [325.9 Kb in 0.57s]
+"
+"1","- Downloading stringi 1.8.7 from RSPM ...       "
+"1","OK [3.1 Mb in 0.65s]
+"
+"1","- Downloading tidyr 1.3.2 from RSPM ...         "
+"1","OK [1.1 Mb in 0.61s]
+"
+"1","- Downloading cpp11 0.5.2 from RSPM ...         "
+"1","OK [282.6 Kb in 0.58s]
+"
+"1","- Downloading callr 3.7.6 from RSPM ...         "
+"1","OK [438.7 Kb in 0.59s]
+"
+"1","- Downloading processx 3.8.6 from RSPM ...      "
+"1","OK [329.5 Kb in 0.61s]
+"
+"1","- Downloading ps 1.9.1 from RSPM ...            "
+"1","OK [487.9 Kb in 0.6s]
+"
+"1","- Downloading car 3.1-5 from CRAN ...           "
+"1","OK [1.5 Mb in 0.6s]
+"
+"1","- Downloading pbkrtest 0.5.5 from CRAN ...      "
+"1","OK [216.9 Kb in 0.56s]
+"
+"1","- Downloading numDeriv 2016.8-1.1 from CRAN ... "
+"1","OK [111.7 Kb in 0.56s]
+"
+"1","- Downloading doBy 4.7.1 from CRAN ...          "
+"1","OK [4.6 Mb in 0.65s]
+"
+"1","- Downloading cowplot 1.2.0 from CRAN ...       "
+"1","OK [1.3 Mb in 0.6s]
+"
+"1","- Downloading ggplot2 4.0.1 from RSPM ...       "
+"1","OK [8.1 Mb in 1.0s]
+"
+"1","- Downloading gtable 0.3.6 from RSPM ...        "
+"1","OK [217.3 Kb in 0.58s]
+"
+"1","- Downloading isoband 0.3.0 from RSPM ...       "
+"1","OK [1.6 Mb in 0.62s]
+"
+"1","- Downloading scales 1.4.0 from RSPM ...        "
+"1","OK [821.6 Kb in 0.6s]
+"
+"1","- Downloading farver 2.1.2 from RSPM ...        "
+"1","OK [1.4 Mb in 0.63s]
+"
+"1","- Downloading labeling 0.4.3 from RSPM ...      "
+"1","OK [59.5 Kb in 0.59s]
+"
+"1","- Downloading viridisLite 0.4.2 from RSPM ...   "
+"1","OK [1.2 Mb in 0.62s]
+"
+"1","- Downloading forecast 9.0.1 from CRAN ...      "
+"1","OK [1.6 Mb in 0.63s]
+"
+"1","- Downloading colorspace 2.1-2 from CRAN ...    "
+"1","OK [2.5 Mb in 0.72s]
+"
+"1","- Downloading fracdiff 1.5-3 from CRAN ...      "
+"1","OK [96.3 Kb in 0.55s]
+"
+"1","- Downloading lmtest 0.9-40 from CRAN ...       "
+"1","OK [394 Kb in 0.57s]
+"
+"1","- Downloading zoo 1.8-15 from CRAN ...          "
+"1","OK [1 Mb in 0.6s]
+"
+"1","- Downloading timeDate 4052.112 from CRAN ...   "
+"1","OK [1.4 Mb in 0.61s]
+"
+"1","- Downloading urca 1.3-4 from CRAN ...          "
+"1","OK [1 Mb in 0.61s]
+"
+"1","- Downloading modelr 0.1.11 from RSPM ...       "
+"1","OK [196 Kb in 0.57s]
+"
+"1","- Downloading microbenchmark 1.5.0 from CRAN ... "
+"1","OK [64.4 Kb in 0.54s]
+"
+"1","- Downloading lme4 2.0-1 from CRAN ...          "
+"1","OK [4.3 Mb in 0.65s]
+"
+"1","- Downloading minqa 1.2.8 from CRAN ...         "
+"1","OK [119.6 Kb in 0.55s]
+"
+"1","- Downloading nloptr 2.2.1 from CRAN ...        "
+"1","OK [554.3 Kb in 0.59s]
+"
+"1","- Downloading reformulas 0.4.4 from CRAN ...    "
+"1","OK [153.4 Kb in 0.56s]
+"
+"1","- Downloading quantreg 6.1 from CRAN ...        "
+"1","OK [1.4 Mb in 0.61s]
+"
+"1","- Downloading carData 3.0-6 from CRAN ...       "
+"1","OK [1.6 Mb in 0.61s]
+"
+"1","- Downloading cellranger 1.1.0 from RSPM ...    "
+"1","OK [101.2 Kb in 0.57s]
+"
+"1","- Downloading rematch 2.0.0 from RSPM ...       "
+"1","OK [15.8 Kb in 0.54s]
+"
+"1","- Downloading clipr 0.8.0 from RSPM ...         "
+"1","OK [50 Kb in 0.54s]
+"
+"1","- Downloading clue 0.3-67 from CRAN ...         "
+"1","OK [997.4 Kb in 0.64s]
+"
+"1","- Downloading conflicted 1.2.0 from RSPM ...    "
+"1","OK [53.7 Kb in 0.56s]
+"
+"1","- Downloading corrplot 0.95 from CRAN ...       "
+"1","OK [3.6 Mb in 0.66s]
+"
+"1","- Downloading crayon 1.5.3 from RSPM ...        "
+"1","OK [159.5 Kb in 0.56s]
+"
+"1","- Downloading curl 7.0.0 from RSPM ...          "
+"1","OK [769.8 Kb in 0.6s]
+"
+"1","- Downloading data.table 1.18.0 from RSPM ...   "
+"1","OK [2.8 Mb in 0.66s]
+"
+"1","- Downloading datapasta 3.1.0 from CRAN ...     "
+"1","OK [678.3 Kb in 1.5s]
+"
+"1","- Downloading readr 2.1.6 from RSPM ...         "
+"1","OK [848.2 Kb in 0.93s]
+"
+"1","- Downloading hms 1.1.4 from RSPM ...           "
+"1","OK [101 Kb in 0.54s]
+"
+"1","- Downloading vroom 1.6.7 from RSPM ...         "
+"1","OK [943.4 Kb in 0.62s]
+"
+"1","- Downloading tzdb 0.5.0 from RSPM ...          "
+"1","OK [650.9 Kb in 0.58s]
+"
+"1","- Downloading progress 1.2.3 from RSPM ...      "
+"1","OK [85 Kb in 0.54s]
+"
+"1","- Downloading prettyunits 1.2.0 from RSPM ...   "
+"1","OK [149 Kb in 0.55s]
+"
+"1","- Downloading rstudioapi 0.17.1 from RSPM ...   "
+"1","OK [310.2 Kb in 0.59s]
+"
+"1","- Downloading dbplyr 2.5.1 from RSPM ...        "
+"1","OK [1.2 Mb in 0.62s]
+"
+"1","- Downloading dtplyr 1.3.2 from RSPM ...        "
+"1","OK [400.2 Kb in 0.91s]
+"
+"1","- Downloading egg 0.4.5 from CRAN ...           "
+"1","OK [854.3 Kb in 0.94s]
+"
+"1","- Downloading gridExtra 2.3 from CRAN ...       "
+"1","OK [1.1 Mb in 0.6s]
+"
+"1","- Downloading forcats 1.0.1 from RSPM ...       "
+"1","OK [412.3 Kb in 0.58s]
+"
+"1","- Downloading formattable 0.2.1 from CRAN ...   "
+"1","OK [169.2 Kb in 0.66s]
+"
+"1","- Downloading gargle 1.6.0 from RSPM ...        "
+"1","OK [604.4 Kb in 0.93s]
+"
+"1","- Downloading httr 1.4.7 from RSPM ...          "
+"1","OK [475.1 Kb in 0.64s]
+"
+"1","- Downloading openssl 2.3.4 from RSPM ...       "
+"1","OK [1.3 Mb in 0.64s]
+"
+"1","- Downloading ggforce 0.5.0 from CRAN ...       "
+"1","OK [1.9 Mb in 0.67s]
+"
+"1","- Downloading tweenr 2.0.3 from CRAN ...        "
+"1","OK [450.5 Kb in 0.59s]
+"
+"1","- Downloading polyclip 1.10-7 from CRAN ...     "
+"1","OK [117.2 Kb in 0.56s]
+"
+"1","- Downloading systemfonts 1.3.1 from RSPM ...   "
+"1","OK [797.3 Kb in 0.61s]
+"
+"1","- Downloading ggpubr 0.6.3 from CRAN ...        "
+"1","OK [2 Mb in 0.63s]
+"
+"1","- Downloading ggrepel 0.9.7 from CRAN ...       "
+"1","OK [355.2 Kb in 1.3s]
+"
+"1","- Downloading ggsci 4.2.0 from CRAN ...         "
+"1","OK [2.2 Mb in 0.64s]
+"
+"1","- Downloading ggsignif 0.6.4 from CRAN ...      "
+"1","OK [588 Kb in 0.63s]
+"
+"1","- Downloading polynom 1.4-1 from CRAN ...       "
+"1","OK [397.5 Kb in 0.59s]
+"
+"1","- Downloading rstatix 0.7.3 from CRAN ...       "
+"1","OK [600.8 Kb in 0.6s]
+"
+"1","- Downloading googledrive 2.1.2 from RSPM ...   "
+"1","OK [1.8 Mb in 0.64s]
+"
+"1","- Downloading uuid 1.2-1 from RSPM ...          "
+"1","OK [47.8 Kb in 0.56s]
+"
+"1","- Downloading googlesheets4 1.1.2 from RSPM ... "
+"1","OK [503.1 Kb in 0.6s]
+"
+"1","- Downloading ids 1.0.1 from RSPM ...           "
+"1","OK [119.6 Kb in 0.56s]
+"
+"1","- Downloading rematch2 2.1.2 from RSPM ...      "
+"1","OK [44.9 Kb in 0.55s]
+"
+"1","- Downloading haven 2.5.5 from RSPM ...         "
+"1","OK [384.7 Kb in 0.58s]
+"
+"1","- Downloading kableExtra 1.4.0 from CRAN ...    "
+"1","OK [2 Mb in 0.62s]
+"
+"1","- Downloading xml2 1.5.1 from RSPM ...          "
+"1","OK [275.5 Kb in 0.62s]
+"
+"1","- Downloading svglite 2.2.2 from CRAN ...       "
+"1","OK [233.6 Kb in 0.56s]
+"
+"1","- Downloading textshaping 1.0.4 from RSPM ...   "
+"1","OK [185.1 Kb in 0.57s]
+"
+"1","- Downloading lubridate 1.9.4 from RSPM ...     "
+"1","OK [967.5 Kb in 0.61s]
+"
+"1","- Downloading timechange 0.3.0 from RSPM ...    "
+"1","OK [173.7 Kb in 0.57s]
+"
+"1","- Downloading officer 0.7.3 from CRAN ...       "
+"1","OK [2.2 Mb in 0.73s]
+"
+"1","- Downloading ragg 1.5.0 from RSPM ...          "
+"1","OK [726.2 Kb in 0.62s]
+"
+"1","- Downloading zip 2.3.3 from CRAN ...           "
+"1","OK [645.5 Kb in 0.6s]
+"
+"1","- Downloading readxl 1.4.5 from RSPM ...        "
+"1","OK [402.7 Kb in 0.57s]
+"
+"1","- Downloading reprex 2.1.1 from RSPM ...        "
+"1","OK [483.7 Kb in 0.6s]
+"
+"1","- Downloading rvest 1.0.5 from RSPM ...         "
+"1","OK [294.3 Kb in 0.69s]
+"
+"1","- Downloading selectr 0.5-1 from RSPM ...       "
+"1","OK [557.8 Kb in 0.6s]
+"
+"1","- Downloading statip 0.2.3 from CRAN ...        "
+"1","OK [104.7 Kb in 1.1s]
+"
+"1","- Downloading tidyverse 2.0.0 from RSPM ...     "
+"1","OK [415.8 Kb in 0.62s]
+"
+"1","Successfully downloaded 156 packages in 120 seconds.
+"
+"1","
+"
+"1","# Installing packages --------------------------------------------------------
+"
+"1","- Installing DBI 1.2.3 ...                      "
+"1","OK [installed binary and cached in 0.28s]
+"
+"1","- Installing base64enc 0.1-3 ...                "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing digest 0.6.39 ...                  "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing fastmap 1.2.0 ...                  "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing rlang 1.1.6 ...                    "
+"1","OK [installed binary and cached in 0.26s]
+"
+"1","- Installing htmltools 0.5.9 ...                "
+"1","OK [installed binary and cached in 0.24s]
+"
+"1","- Installing jsonlite 2.0.0 ...                 "
+"1","OK [installed binary and cached in 0.24s]
+"
+"1","- Installing lazyeval 0.2.2 ...                 "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing R6 2.6.1 ...                       "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing crosstalk 1.2.2 ...                "
+"1","OK [installed binary and cached in 0.25s]
+"
+"1","- Installing evaluate 1.0.5 ...                 "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing xfun 0.55 ...                      "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing highr 0.11 ...                     "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing yaml 2.3.12 ...                    "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing knitr 1.51 ...                     "
+"1","OK [installed binary and cached in 0.3s]
+"
+"1","- Installing cachem 1.1.0 ...                   "
+"1","OK [installed binary and cached in 0.24s]
+"
+"1","- Installing jquerylib 0.1.4 ...                "
+"1","OK [installed binary and cached in 0.26s]
+"
+"1","- Installing cli 3.6.5 ...                      "
+"1","OK [installed binary and cached in 0.27s]
+"
+"1","- Installing glue 1.8.0 ...                     "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing lifecycle 1.0.4 ...                "
+"1","OK [installed binary and cached in 0.28s]
+"
+"1","- Installing memoise 2.0.1 ...                  "
+"1","OK [installed binary and cached in 0.29s]
+"
+"1","- Installing mime 0.13 ...                      "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing fs 1.6.6 ...                       "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing rappdirs 0.3.3 ...                 "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing sass 0.4.10 ...                    "
+"1","OK [installed binary and cached in 0.36s]
+"
+"1","- Installing bslib 0.9.0 ...                    "
+"1","OK [installed binary and cached in 0.55s]
+"
+"1","- Installing fontawesome 0.5.3 ...              "
+"1","OK [installed binary and cached in 0.32s]
+"
+"1","- Installing tinytex 0.58 ...                   "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing rmarkdown 2.30 ...                 "
+"1","OK [installed binary and cached in 0.42s]
+"
+"1","- Installing htmlwidgets 1.6.4 ...              "
+"1","OK [installed binary and cached in 0.3s]
+"
+"1","- Installing magrittr 2.0.4 ...                 "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing Rcpp 1.1.1 ...                     "
+"1","OK [installed binary and cached in 0.41s]
+"
+"1","- Installing later 1.4.8 ...                    "
+"1","OK [installed binary and cached in 0.25s]
+"
+"1","- Installing otel 0.2.0 ...                     "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing promises 1.5.0 ...                 "
+"1","OK [installed binary and cached in 0.38s]
+"
+"1","- Installing DT 0.34.0 ...                      "
+"1","OK [installed binary and cached in 0.41s]
+"
+"1","- Installing Deriv 4.2.0 ...                    "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing Formula 1.2-5 ...                  "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing MatrixModels 0.5-4 ...             "
+"1","OK [installed binary and cached in 0.77s]
+"
+"1","- Installing RColorBrewer 1.1-3 ...             "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing RcppArmadillo 15.2.3-1 ...         "
+"1","OK [installed binary and cached in 0.56s]
+"
+"1","- Installing RcppEigen 0.3.4.0.2 ...            "
+"1","OK [installed binary and cached in 0.41s]
+"
+"1","- Installing rbibutils 2.4.1 ...                "
+"1","OK [installed binary and cached in 0.24s]
+"
+"1","- Installing Rdpack 2.6.6 ...                   "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing S7 0.2.1 ...                       "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing SparseM 1.84-2 ...                 "
+"1","OK [installed binary and cached in 0.27s]
+"
+"1","- Installing abind 1.4-8 ...                    "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing sys 3.4.3 ...                      "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing askpass 1.2.1 ...                  "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing backports 1.5.0 ...                "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing bio3d 2.4-5 ...                    "
+"1","OK [installed binary and cached in 0.31s]
+"
+"1","- Installing bit 4.6.0 ...                      "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing bit64 4.6.0-1 ...                  "
+"1","OK [installed binary and cached in 0.23s]
+"
+"1","- Installing vctrs 0.6.5 ...                    "
+"1","OK [installed binary and cached in 0.34s]
+"
+"1","- Installing blob 1.2.4 ...                     "
+"1","OK [installed binary and cached in 0.28s]
+"
+"1","- Installing generics 0.1.4 ...                 "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing utf8 1.2.6 ...                     "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing pillar 1.11.1 ...                  "
+"1","OK [installed binary and cached in 0.37s]
+"
+"1","- Installing pkgconfig 2.0.3 ...                "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing tibble 3.3.0 ...                   "
+"1","OK [installed binary and cached in 0.4s]
+"
+"1","- Installing withr 3.0.2 ...                    "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing tidyselect 1.2.1 ...               "
+"1","OK [installed binary and cached in 0.3s]
+"
+"1","- Installing dplyr 1.1.4 ...                    "
+"1","OK [installed binary and cached in 0.45s]
+"
+"1","- Installing purrr 1.2.0 ...                    "
+"1","OK [installed binary and cached in 0.31s]
+"
+"1","- Installing stringi 1.8.7 ...                  "
+"1","OK [installed binary and cached in 0.28s]
+"
+"1","- Installing stringr 1.6.0 ...                  "
+"1","OK [installed binary and cached in 0.31s]
+"
+"1","- Installing cpp11 0.5.2 ...                    "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing tidyr 1.3.2 ...                    "
+"1","OK [installed binary and cached in 0.43s]
+"
+"1","- Installing broom 1.0.11 ...                   "
+"1","OK [installed binary and cached in 0.49s]
+"
+"1","- Installing ps 1.9.1 ...                       "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing processx 3.8.6 ...                 "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing callr 3.7.6 ...                    "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing numDeriv 2016.8-1.1 ...            "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing gtable 0.3.6 ...                   "
+"1","OK [installed binary and cached in 0.31s]
+"
+"1","- Installing isoband 0.3.0 ...                  "
+"1","OK [installed binary and cached in 0.32s]
+"
+"1","- Installing farver 2.1.2 ...                   "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing labeling 0.4.3 ...                 "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing viridisLite 0.4.2 ...              "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing scales 1.4.0 ...                   "
+"1","OK [installed binary and cached in 0.39s]
+"
+"1","- Installing ggplot2 4.0.1 ...                  "
+"1","OK [installed binary and cached in 0.78s]
+"
+"1","- Installing cowplot 1.2.0 ...                  "
+"1","OK [installed binary and cached in 0.7s]
+"
+"1","- Installing colorspace 2.1-2 ...               "
+"1","OK [installed binary and cached in 0.29s]
+"
+"1","- Installing fracdiff 1.5-3 ...                 "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing zoo 1.8-15 ...                     "
+"1","OK [installed binary and cached in 0.26s]
+"
+"1","- Installing lmtest 0.9-40 ...                  "
+"1","OK [installed binary and cached in 0.23s]
+"
+"1","- Installing timeDate 4052.112 ...              "
+"1","OK [installed binary and cached in 0.28s]
+"
+"1","- Installing urca 1.3-4 ...                     "
+"1","OK [installed binary and cached in 0.28s]
+"
+"1","- Installing forecast 9.0.1 ...                 "
+"1","OK [installed binary and cached in 0.98s]
+"
+"1","- Installing modelr 0.1.11 ...                  "
+"1","OK [installed binary and cached in 0.47s]
+"
+"1","- Installing microbenchmark 1.5.0 ...           "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing doBy 4.7.1 ...                     "
+"1","OK [installed binary and cached in 1.5s]
+"
+"1","- Installing minqa 1.2.8 ...                    "
+"1","OK [installed binary and cached in 0.25s]
+"
+"1","- Installing nloptr 2.2.1 ...                   "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing reformulas 0.4.4 ...               "
+"1","OK [installed binary and cached in 0.73s]
+"
+"1","- Installing lme4 2.0-1 ...                     "
+"1","OK [installed binary and cached in 1.1s]
+"
+"1","- Installing pbkrtest 0.5.5 ...                 "
+"1","OK [installed binary and cached in 1.2s]
+"
+"1","- Installing quantreg 6.1 ...                   "
+"1","OK [installed binary and cached in 0.86s]
+"
+"1","- Installing carData 3.0-6 ...                  "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing car 3.1-5 ...                      "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing rematch 2.0.0 ...                  "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing cellranger 1.1.0 ...               "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing clipr 0.8.0 ...                    "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing clue 0.3-67 ...                    "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing conflicted 1.2.0 ...               "
+"1","OK [installed binary and cached in 0.28s]
+"
+"1","- Installing corrplot 0.95 ...                  "
+"1","OK [installed binary and cached in 0.26s]
+"
+"1","- Installing crayon 1.5.3 ...                   "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing curl 7.0.0 ...                     "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing data.table 1.18.0 ...              "
+"1","OK [installed binary and cached in 0.34s]
+"
+"1","- Installing hms 1.1.4 ...                      "
+"1","OK [installed binary and cached in 0.3s]
+"
+"1","- Installing tzdb 0.5.0 ...                     "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing prettyunits 1.2.0 ...              "
+"1","OK [installed binary and cached in 0.18s]
+"
+"1","- Installing progress 1.2.3 ...                 "
+"1","OK [installed binary and cached in 0.32s]
+"
+"1","- Installing vroom 1.6.7 ...                    "
+"1","OK [installed binary and cached in 0.48s]
+"
+"1","- Installing readr 2.1.6 ...                    "
+"1","OK [installed binary and cached in 0.42s]
+"
+"1","- Installing rstudioapi 0.17.1 ...              "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing datapasta 3.1.0 ...                "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing dbplyr 2.5.1 ...                   "
+"1","OK [installed binary and cached in 0.62s]
+"
+"1","- Installing dtplyr 1.3.2 ...                   "
+"1","OK [installed binary and cached in 0.46s]
+"
+"1","- Installing gridExtra 2.3 ...                  "
+"1","OK [installed binary and cached in 0.35s]
+"
+"1","- Installing egg 0.4.5 ...                      "
+"1","OK [installed binary and cached in 0.7s]
+"
+"1","- Installing forcats 1.0.1 ...                  "
+"1","OK [installed binary and cached in 0.31s]
+"
+"1","- Installing formattable 0.2.1 ...              "
+"1","OK [installed binary and cached in 0.33s]
+"
+"1","- Installing openssl 2.3.4 ...                  "
+"1","OK [installed binary and cached in 0.25s]
+"
+"1","- Installing httr 1.4.7 ...                     "
+"1","OK [installed binary and cached in 0.22s]
+"
+"1","- Installing gargle 1.6.0 ...                   "
+"1","OK [installed binary and cached in 0.34s]
+"
+"1","- Installing tweenr 2.0.3 ...                   "
+"1","OK [installed binary and cached in 0.31s]
+"
+"1","- Installing polyclip 1.10-7 ...                "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing systemfonts 1.3.1 ...              "
+"1","OK [installed binary and cached in 0.3s]
+"
+"1","- Installing ggforce 0.5.0 ...                  "
+"1","OK [installed binary and cached in 0.75s]
+"
+"1","- Installing ggrepel 0.9.7 ...                  "
+"1","OK [installed binary and cached in 0.76s]
+"
+"1","- Installing ggsci 4.2.0 ...                    "
+"1","OK [installed binary and cached in 0.74s]
+"
+"1","- Installing ggsignif 0.6.4 ...                 "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing polynom 1.4-1 ...                  "
+"1","OK [installed binary and cached in 0.2s]
+"
+"1","- Installing rstatix 0.7.3 ...                  "
+"1","OK [installed binary and cached in 0.46s]
+"
+"1","- Installing ggpubr 0.6.3 ...                   "
+"1","OK [installed binary and cached in 0.78s]
+"
+"1","- Installing uuid 1.2-1 ...                     "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing googledrive 2.1.2 ...              "
+"1","OK [installed binary and cached in 0.53s]
+"
+"1","- Installing ids 1.0.1 ...                      "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing rematch2 2.1.2 ...                 "
+"1","OK [installed binary and cached in 0.37s]
+"
+"1","- Installing googlesheets4 1.1.2 ...            "
+"1","OK [installed binary and cached in 0.49s]
+"
+"1","- Installing haven 2.5.5 ...                    "
+"1","OK [installed binary and cached in 0.39s]
+"
+"1","- Installing xml2 1.5.1 ...                     "
+"1","OK [installed binary and cached in 0.3s]
+"
+"1","- Installing textshaping 1.0.4 ...              "
+"1","OK [installed binary and cached in 0.3s]
+"
+"1","- Installing svglite 2.2.2 ...                  "
+"1","OK [installed binary and cached in 0.29s]
+"
+"1","- Installing kableExtra 1.4.0 ...               "
+"1","OK [installed binary and cached in 0.54s]
+"
+"1","- Installing timechange 0.3.0 ...               "
+"1","OK [installed binary and cached in 0.19s]
+"
+"1","- Installing lubridate 1.9.4 ...                "
+"1","OK [installed binary and cached in 0.29s]
+"
+"1","- Installing ragg 1.5.0 ...                     "
+"1","OK [installed binary and cached in 0.33s]
+"
+"1","- Installing zip 2.3.3 ...                      "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing officer 0.7.3 ...                  "
+"1","OK [installed binary and cached in 0.52s]
+"
+"1","- Installing readxl 1.4.5 ...                   "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing reprex 2.1.1 ...                   "
+"1","OK [installed binary and cached in 0.34s]
+"
+"1","- Installing selectr 0.5-1 ...                  "
+"1","OK [installed binary and cached in 0.34s]
+"
+"1","- Installing rvest 1.0.5 ...                    "
+"1","OK [installed binary and cached in 0.33s]
+"
+"1","- Installing statip 0.2.3 ...                   "
+"1","OK [installed binary and cached in 0.21s]
+"
+"1","- Installing tidyverse 2.0.0 ...                "
+"1","OK [installed binary and cached in 0.21s]
+"

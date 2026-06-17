@@ -1,1 +1,0 @@
-"0","datatable(pdbsum_filelist_atomlevel.stats, filter = 'top') %>% saveWidget(., file = ""table_arp_stats.html"", selfcontained = TRUE)"

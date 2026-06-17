@@ -1,0 +1,3 @@
+"0","project_cfg <- get_project_config(""ab321"")"
+"0","AA_tribble <- project_cfg$AA_tribble"
+"0","AA_singlecode <- project_cfg$AA_singlecode"

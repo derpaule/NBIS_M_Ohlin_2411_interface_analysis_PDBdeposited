@@ -1,0 +1,8 @@
+"0","#%>% dplyr::mutate(., number1 = as.numeric(number1))"
+"0",""
+"0","PDBsum_rank_tribble.stats <- PDBsum_rank_tribble %>% dplyr::filter(., ranktype != ""distance"") %>% dplyr::arrange(., ranktype, rank)"
+"0",""
+"0","write_datatable_html("
+"0","  data = PDBsum_rank_tribble.stats,"
+"0","  output_file = ""table_arp_rank.html"""
+"0",")"

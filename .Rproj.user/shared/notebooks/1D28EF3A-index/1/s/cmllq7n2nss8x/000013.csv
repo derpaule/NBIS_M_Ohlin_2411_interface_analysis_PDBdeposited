@@ -1,0 +1,8 @@
+"0","# Load region colors from shared config (base palette for this comparison)"
+"0","region_colors.tib <- get_base_region_colors()"
+"0","region_colors <- region_colors.tib %>% deframe()"
+"0",""
+"0","# Load Arpeggio interaction type colors from shared config"
+"0","yrb <- get_yrb_colors()"
+"0","arpeggio_assign_color <- build_arpeggio_assign_color()"
+"0","arpeggio_assign_color_col <- get_arpeggio_assign_color_col(arpeggio_assign_color, key_column = ""PIC_type"")"

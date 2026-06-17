@@ -1,8 +1,0 @@
-"0","#pisa_filelist_long_sel_resP"
-"0","pisa_filelist_long_sel_resP_chain.stats <- pisa_filelist_long_sel_regionsum %>% ungroup() %>% dplyr::group_by(., obj, arpeggio, chain, region_col) %>% dplyr::summarize(., bsa_region_chain=sum(bsa_sum)) %>% dplyr::mutate(., bsa_arpeggio=sum(bsa_region_chain)) %>% dplyr::mutate(., bsa_perc_chain=(round((bsa_region_chain/bsa_arpeggio)*100, 1) )) "
-"0",""
-"0","pisa_filelist_long_sel_resP.stats <- pisa_filelist_long_sel_resP_chain.stats %>% ungroup() %>% dplyr::group_by(., obj, arpeggio, region_col) %>% dplyr::summarize(., bsa_arp_chain = sum(bsa_arpeggio)) %>% ungroup %>% dplyr::group_by(., obj, arpeggio, region_col) %>% dplyr::group_by(., obj, arpeggio, region_col) %>% right_join(., pisa_filelist_long_sel_resP_chain.stats) %>% dplyr::mutate(., bsa_perc_region= (round((bsa_region_chain/bsa_arp_chain)*100, 1))) %>% dplyr::arrange(., obj, arpeggio, chain, region_col)"
-"0",""
-"0","#pisa_filelist_long_sel_resP_50.stats <- pisa_filelist_long_sel_resP.stats %>% ungroup() %>% dplyr::filter(., bsa_perc_sum > 49.99) %>% dplyr::group_by(., obj, arpeggio, region_col) %>% dplyr::summarize(., bsa_region=sum(bsa_sum)) %>% dplyr::mutate(., bsa_arpeggio=sum(bsa_region)) %>% dplyr::mutate(., bsa_perc=(bsa_region/bsa_arpeggio)*100)"
-"0",""
-"0","datatable(pisa_filelist_long_sel_resP.stats, filter = 'top') "

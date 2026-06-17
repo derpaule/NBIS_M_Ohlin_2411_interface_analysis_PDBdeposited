@@ -1,0 +1,1 @@
+alter {{obj_name}} and chain {{chain}} and resi {{resid}}, b={{b_value}};
