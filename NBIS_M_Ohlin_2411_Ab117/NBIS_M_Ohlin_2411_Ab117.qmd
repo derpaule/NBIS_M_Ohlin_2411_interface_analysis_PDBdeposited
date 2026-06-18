@@ -13,7 +13,7 @@ library(plotly)
 Set the working directory to subfolder
 
 ```{r}
-setwd("../NBIS_M_Ohlin_2411_Ab117")
+setwd("/home/rstudio/NBIS_M_Ohlin_2411_interface_analysis_vscoded_mimotopes/NBIS_M_Ohlin_2411_Ab117")
 ```
 
 
@@ -22,6 +22,7 @@ setwd("../NBIS_M_Ohlin_2411_Ab117")
 source("../R/pml_templates.R")
 source("../R/shared_config.R")
 source("../R/shared_io.R")
+source("../R/shared_functions.R")
 ```
 
 
@@ -46,7 +47,11 @@ AA_singlecode <- project_cfg$AA_singlecode
 ### To define project-specific protein parameters
 
 ```{r protein-definition}
-protein_definition <- project_cfg$protein_definition
+#protein_definition <- project_cfg$protein_definition
+protein_definition <- tribble(~obj, ~proteinID1, ~proteinID2, ~epitope,
+                              "OBJ00", "ACE2", "PDB7A94", "ACE_bound",
+                              "OBJ01", "Ab117_RBD01", "Ab117_RBD01", "Ab117_bound"
+                              )
 ```
 
 ### To define coloring schemes
@@ -388,91 +393,6 @@ arpeggio_chain_filter <- tribble(~obj, ~chain1, ~keep,
 ```
 
 ```{r}
-read_tsv_pdbsum_f <- function(file, col_names){
-  col_names_vec <- col_names %>% dplyr::select(., PDBres) %>% pull() 
-  pdbsum_data <- vroom(file = file, col_names = col_names_vec)
-  return(pdbsum_data)
-}
-
-PDBsum_sort_tribble <- tribble(~no_col, ~named_col, ~filetype,
-                        17, enframe( c("id1", "id2","Clash", "Covalent", "vdW_Clash", "VdW", "Proximal", "HydrogenBond","weakHydrogenBond", "HalogenBond", "Ionic", "MetalComplex", "Aromatic", "Hydrophobic", "Carbonyl", "Polar", "WeakPolar", "ENTITIES"), value = "PDBres"), "contacts"
-                        )
-
-PDBsum_rank_tribble <- PDBsum_sort_tribble %>% dplyr::select(., named_col) %>% unnest(., named_col) %>% dplyr::slice(., 3:17) %>% dplyr::select(., PDBres) %>% add_column(., rank = c(1, 2, 1, 1, 1, 3, 1, 3, 4, 3, 3, 2, 1, 2, 1)) %>% add_column(., ranktype = c("distance", "distance", "distance", "distance", "distance", "polar", "distance", "polar", "polar", "polar", "nonpolar", "nonpolar", "polar", "polar", "distance")) %>% dplyr::select(., name = PDBres, rank, ranktype)
-
-
-#reshaping the data using tidyverse
-#PDBsum_sort_tribble <- PDBsum_sort_tribble %>% left_join(., PDBsum_pdbs_tribble)
-
-test_ligchain_f <- function(chain1, lig_chain){
-  case_when()
-}
-
-#check bbsc
-analyze_arpeggio_f <- function(data){
-  data_out <- data %>% left_join(., PDBsum_rank_tribble) %>% group_by(., id1, atom1, id2, atom2) %>% nest() %>% dplyr::mutate(., data_ranked = purrr::map(data, ~dplyr::filter(., rank == max(rank)))) %>% dplyr::mutate(., ncolumn = purrr::map(data, ~nrow(.))) %>% unchop(., ncolumn) #%>% dplyr::mutate(., bbsc1 = case_when(atom1 == "O" ~ "bb", atom1 == "N" ~ "bb", atom1 == "C" ~ "bb", atom1 == "CA" ~ "bb", TRUE ~ "sc"), bbsc2 = case_when(atom2 == "O" ~ "bb", atom2 == "N" ~ "bb", atom2 == "C" ~ "bb", atom2 == "CA" ~ "bb", TRUE ~ "sc")) %>% unite(., "bbsc", c("bbsc1", "bbsc2"), sep = "_", remove=FALSE)
-  return(data_out) 
-}
-
-arpeggio_chainsort_f <- function(data, sel_chain){
-  sel_chain_letter <- sel_chain[[1]]
-  data_out <-  data %>% separate(., id1, c("chain1", "number1", "atom1"), sep = "\\/", remove = FALSE) %>% separate(., id2, c("chain2", "number2", "atom2"), sep = "\\/", remove = FALSE) %>% dplyr::mutate(., id1_corr = case_when(chain1 == sel_chain_letter ~ id1, TRUE ~ id2), id2_corr = case_when(chain2 == sel_chain_letter ~ id1, TRUE ~ id2)) %>% dplyr::select(., -id1, -chain1, -number1, -atom1, -id2, -chain2, -number2, -atom2) %>% separate(., id1_corr, c("chain1", "number1", "atom1"), sep = "\\/", remove = FALSE) %>% separate(., id2_corr, c("chain2", "number2", "atom2"), sep = "\\/", remove = FALSE) 
-  return(data_out)
-}
-
-# to replace arpeggio_rec_lig_f
-arpeggio_id_f <- function(data){
-  data1 <- data
-  data2 <- data %>% dplyr::select(., id1=id2, id2=id1, ENTITIES, name, value) 
-  data_out <- full_join(data1, data2) %>% separate(., id1, c("chain1", "number1", "atom1"), sep = "\\/", remove=FALSE) %>% separate(., id2, c("chain2", "number2", "atom2"), sep = "\\/", remove=FALSE) %>% dplyr::mutate(., cmd = paste("/",chain1, "/", number1, "/", sep=""))
-  return(data_out)
-}
-
-# this takes only the data_ranked from data_long2!, thus essentially polar contacts replace proximal.
-arpeggio_sort_f <- function(data){
-data_out <-  data %>% dplyr::mutate(., nrows = purrr::map(data_ranked, ~nrow(.))) %>% unnest(nrows) %>% ungroup() %>% dplyr::select(., -data) %>% unnest(data_ranked) %>% group_by(id1, id2) %>% nest()
-return(data_out)
-}
-
-#check bbsc
-arpeggio_sum_f <- function(data){ #data %>% dplyr::mutate(., data_filtered = purrr::map(data, ~group_by(., bbsc)))
-  data_out <- data %>% dplyr::mutate(., data_filtered = purrr::map(data, ~dplyr::filter(., rank == max(rank), ranktype != "distance"))) %>% dplyr::mutate(., data_sum = purrr::map(data_filtered, ~dplyr::summarize(., interaction_type = unique(name))))
-  return(data_out)
-}
-
-arpeggion_rescount_f <- function(data){
-  data_out <- data %>% dplyr::select(., number1, number2, data) %>% unnest(., cols = c("data")) %>% dplyr::group_by(., lig_chain, number1, rec_chain, number2, ranktype, name) %>% dplyr::summarize(., count = n())
-  return(data_out)
-}
-
-arpeggio_atomlevel_f <- function(data){
-  data_out <- data %>% dplyr::select(., !c("data_filtered", "data_sum")) %>% unnest(., c("data")) %>% dplyr::mutate(., name_cor = case_when(name == "VdW" ~ "Proximal", name == "vdW_Clash" ~ "Proximal", TRUE ~ name)) %>% dplyr::select(., !c("name")) %>% dplyr::mutate(., name = name_cor)
-  return(data_out)
-}
-
-arpeggio_reslevel_f <- function(data){
-  data_out <- data %>% dplyr::group_by(., chain1, number1, ranktype, name) %>% dplyr::summarize(., count = n())
-  return(data_out)
-}
-
-
-arpeggio_liglevel_f <- function(data){
-  data_out <- data %>% ungroup() %>% dplyr::group_by(., chain1, number1, name) %>% dplyr::summarize(sumcount = sum(count))
-  return(data_out)
-}
-
-# PISA/Arpeggio selection import
-#pisa_pdb_tribble <- tribble(~binder, ~PDB, ~sel_chain, 
-#                            "cat", "XXX", "A")
-                            #"fab", "3GJF", "A", "C", "H", "L",
-                            #"dar", "4A8", "A", "C", "D", "D")
-
-#PDB_assignment <- tribble(~binder, ~chain2, ~complex,
-#                          "cat", c("B", "C", "D", "E"), "intra",
-#                          "cat", c("F", "G", "H", "I", "J"), "inter")
-
-#PDB_assignment <- PDB_assignment %>% unnest(., chain2)
-
 pdbsum_filelist = list.files(path = "./data_arpeggio", pattern = "*", recursive = TRUE, include.dirs = TRUE, full.names = TRUE)
 
 pdbsum_filelist.tib <- as_tibble(pdbsum_filelist) %>% separate(., value, into = c("folder", "subfolder", "filename"), sep = "\\/", remove = FALSE) %>% separate(., filename, into = c("obj", "filetype"), sep = "_") %>% separate(., filetype, into = c("arpeggio", "filetype")) %>% left_join(., PDBsum_sort_tribble)  %>% mutate(data = purrr::pmap(list(value, named_col), read_tsv_pdbsum_f)) %>% dplyr::mutate(., data_mod = purrr::map(data, ~dplyr::mutate(., across(.cols = !c("id1", "id2", "ENTITIES"), .fns = ~case_when(. >  0 ~ "interaction"))))) %>% dplyr::mutate(., data_long = purrr::map(data_mod, ~pivot_longer(., cols = !c("id1", "id2", "ENTITIES"), values_drop_na = TRUE))) %>% dplyr::mutate(., data_long_id = purrr::map(data_long, ~arpeggio_id_f(.))) %>% dplyr::mutate(., data_long2 = purrr::map(data_long_id, ~analyze_arpeggio_f(.)))  %>% dplyr::mutate(., data_long3 = purrr::map(data_long2, ~arpeggio_sort_f(.))) %>% dplyr::mutate(., data_boxplot = purrr::map(data_long3, ~arpeggio_sum_f(.))) 
@@ -525,18 +445,11 @@ arpeggio_AA_tribble_col <- arpeggio_AA_tribble %>% dplyr::select(resaa, AA_typec
 
 pdbsum_filelist_preboxplot.tib <- pdbsum_filelist_liglevel.tib
 
-#sel_binder_chains_filter.tib <- sel_binder_chains.tib %>% dplyr::select(., binder, rec_chain = chain, number2 = resid, resaa)
-
-#pdbsum_filelist_resplot.tib <- pdbsum_filelist_reslevel.tib %>% left_join(., sel_binder_chains_filter.tib) %>% group_by(., PDB, binder, lig_chain, number1, rec_chain, resaa) %>% dplyr::summarize(., sumcount = sum(count)) 
-
-#pdbsum_filelist_AAcount.tib <- pdbsum_filelist_resplot.tib %>% left_join(., AA_tribble) %>% ungroup() %>% group_by(PDB, binder, lig_chain, number1, PIC_type) %>% dplyr::summarize(., countAA = n()) 
 ```
 
 To create res-level stats table
 
 ```{r}
-#%>% dplyr::mutate(., number1 = as.numeric(number1))
-
 pdbsum_filelist_preboxplot.stats <- pdbsum_filelist_preboxplot.tib %>% dplyr::filter(., !grepl('Proximal|weak|Weak', name))
 
 write_datatable_html(
@@ -649,19 +562,6 @@ arpeggio_object.trib <- tribble(~obj_arpeggio, ~obj_new,
                            "OBJ00_AB1", "OBJ00_ARP",
                            "OBJ01_AB1", "OBJ01_ARP")
 
-generate_arpeggio_contacts_f <- function(data, arpeggio_sel){
-  data_in <- data %>% dplyr::filter(., arpeggio == {{arpeggio_sel}} )
-  data_proximal <- data_in %>% dplyr::filter(., name == "Proximal") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_ prox_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
-  data_hydrophobic <- data_in %>% dplyr::filter(., name == "Aromatic" | name == "Hydrophobic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_hphobic_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
-  data_hb <- data_in %>% dplyr::filter(., name == "HydrogenBond" | name == "Ionic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_hbond_", chain1, number1, chain2, number2, "_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
-  data_out <- data_proximal %>% bind_rows(., data_hydrophobic) %>% bind_rows(., data_hb) #%>% dplyr::select(., name, cmd)
-  return(data_out)
-}
-
-tune_arpeggio_contacts_f <- function(data){
-  data_out <- data %>% dplyr::select(., c("obj_arpeggio", "chain1", "number1", "chain2", "number2")) %>% unite(., "chainnum1", c("chain1", "number1"), sep="_") %>% unite(., "chainnum2", c("chain2", "number2"), sep="_") %>% pivot_longer(., cols=c("chainnum1", "chainnum2")) %>% dplyr::select(., !c("name")) %>% group_by(., obj_arpeggio) %>% dplyr::summarize(., res_sel = unique(value)) %>% separate(., "res_sel", into = c("chain", "resi"), sep="_") %>% dplyr::mutate(., cmd_resi = paste("(chain ", chain, " and resi ", resi,")", sep="")) %>% dplyr::select(., !c("chain", "resi")) %>% dplyr::summarize(., obj_arpeggio = unique(obj_arpeggio), cmd_resi = paste(cmd_resi, collapse = " or ")) %>% left_join(., arpeggio_object.trib) %>% dplyr::mutate(., cmd = paste("select ", obj_new, "_show, ", obj_new, " and (", cmd_resi, ")", sep="")) %>% dplyr::select(., c("cmd"))
-  return(data_out)
-}
 
 arpeggio_pymol_exports <- build_arpeggio_pymol_exports(
   pdbsum_filelist_atomlevel.tib = pdbsum_filelist_atomlevel.tib,

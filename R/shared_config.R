@@ -65,40 +65,14 @@ get_project_config <- function(project_key) {
   key <- tolower(project_key)
 
   # Base protein definition shared by ab117 and ab321
-  ab_protein_definition <- tibble::tribble(
-    ~obj, ~proteinID1, ~proteinID2, ~epitope,
-    "OBJ00", "ACE2", "PDB7A94", "ACE_bound"
-  )
-
   configs <- list(
     ab117 = list(
-      protein_definition = dplyr::bind_rows(
-        ab_protein_definition,
-        tibble::tribble(
-          ~obj, ~proteinID1, ~proteinID2, ~epitope,
-          "OBJ01", "Ab117_RBD01", "Ab117_RBD01", "Ab117_bound"
-        )
-      ),
       region_colors.tib = get_base_region_colors()
     ),
     ab321 = list(
-      protein_definition = dplyr::bind_rows(
-        ab_protein_definition,
-        tibble::tribble(
-          ~obj, ~proteinID1, ~proteinID2, ~epitope,
-          "OBJ01", "Ab321", "PDBXXXX", "Ab321_bound"
-        )
-      ),
       region_colors.tib = get_base_region_colors()
     ),
     ace2 = list(
-      protein_definition = dplyr::bind_rows(
-        ab_protein_definition,
-        tibble::tribble(
-          ~obj, ~proteinID1, ~proteinID2, ~epitope,
-          "OBJ01", "SPIKE", "PDBXXXX", "SPIKE_bound"
-        )
-      ),
       region_colors.tib = get_ace2_region_colors()
     )
   )
