@@ -25,27 +25,7 @@ pisa_summarize_f <- function(df) {
   return(df_out)
 }
 
-split_value_f <- function(value, unit) {
-  if (value == 0) {
-    return(tibble::tibble(unit_value = 0, part = 1))
-  } else if (value < unit) {
-    return(tibble::tibble(unit_value = value, part = 1))
-  } else {
-    full_units <- value %/% unit
-    remainder <- value %% unit
-
-    units_df <- tibble::tibble(
-      unit_value = rep(unit, full_units),
-      part = 1:full_units
-    )
-
-    if (remainder > 0) {
-      units_df <- units_df %>% dplyr::add_row(unit_value = remainder, part = full_units + 1)
-    }
-
-    return(units_df)
-  }
-}
+# split_value_f lives in shared_io.R (PISA region merging & summarization section).
 
 read_tsv_pdbsum_f <- function(file, col_names) {
   col_names_vec <- col_names %>% dplyr::select(., PDBres) %>% dplyr::pull()

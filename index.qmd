@@ -24,9 +24,9 @@ Check the text file, and copy commands scene-by-scene to move forward. A break i
 
 The scripts have been tested with these deposited PDB files of the two Abs:
 
--   [Ab117 with PDB code 9IB1](https://www.rcsb.org/structure/9IB1)
--   [Ab321 with PDB code 9TK0](https://www.rcsb.org/structure/9TK0); Note: not released yet.
--   [ACE2 with PDB code 7A94](https://www.rcsb.org/structure/7A94)
+- [Ab117 with PDB code 9IB1](https://www.rcsb.org/structure/9IB1)
+- [Ab321 with PDB code 9TK0](https://www.rcsb.org/structure/9TK0); Note: not released yet.
+- [ACE2 with PDB code 7A94](https://www.rcsb.org/structure/7A94)
 
 # Setup to run the analysis
 
@@ -50,8 +50,10 @@ Setting up the folder
 Set current wd if needed.
 
 ```{r}
-setwd("../")
+setwd("./NBIS_M_Ohlin_2411_interface_analysis_vscoded_mimotopes")
 ```
+
+You may need to re-install renv (Tools -> Install Packages)
 
 If not yet initialized:
 
@@ -60,8 +62,13 @@ If not yet initialized:
 renv::init()
 ```
 
-```{r}
+If already initialized once, restore:
 
+```{r}
+renv::restore()
+```
+
+```{r}
 # Install all packages needed by both projects
 renv::install("tidyverse")
 renv::install("xml2")
@@ -93,7 +100,8 @@ renv::install("survival")
 renv::install("zip")
 renv::install("cowplot")
 renv::install("plotly")
-
+renv::install("tidyjson")
+renv::install("curl")
 # Take a snapshot
 renv::snapshot()
 ```

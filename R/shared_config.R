@@ -64,12 +64,9 @@ get_ace2_region_colors <- function() {
 get_project_config <- function(project_key) {
   key <- tolower(project_key)
 
-  # Base protein definition shared by ab117 and ab321
+  # Base protein definition shared by Abs
   configs <- list(
-    ab117 = list(
-      region_colors.tib = get_base_region_colors()
-    ),
-    ab321 = list(
+    ab = list(
       region_colors.tib = get_base_region_colors()
     ),
     ace2 = list(

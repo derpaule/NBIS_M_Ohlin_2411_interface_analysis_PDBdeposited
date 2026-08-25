@@ -1,0 +1,16 @@
+alter OBJ01_PISA_SPIKE and chain A and resi 414, b=30;
+alter OBJ01_PISA_SPIKE and chain A and resi 448, b=73;
+alter OBJ01_PISA_SPIKE and chain A and resi 449, b=100;
+alter OBJ01_PISA_SPIKE and chain A and resi 466, b=26;
+alter OBJ01_PISA_SPIKE and chain A and resi 468, b=69;
+alter OBJ01_PISA_SPIKE and chain A and resi 469, b=26;
+alter OBJ01_PISA_SPIKE and chain A and resi 471, b=6;
+alter OBJ01_PISA_SPIKE and chain A and resi 477, b=24;
+alter OBJ01_PISA_SPIKE and chain A and resi 478, b=65;
+alter OBJ01_PISA_SPIKE and chain A and resi 479, b=99;
+alter OBJ01_PISA_SPIKE and chain A and resi 480, b=100;
+alter OBJ01_PISA_SPIKE and chain A and resi 481, b=3;
+alter OBJ01_PISA_SPIKE and chain A and resi 482, b=100;
+alter OBJ01_PISA_SPIKE and chain A and resi 483, b=8;
+alter OBJ01_PISA_SPIKE and chain A and resi 486, b=32;
+alter OBJ01_PISA_SPIKE and chain A and resi 498, b=5;

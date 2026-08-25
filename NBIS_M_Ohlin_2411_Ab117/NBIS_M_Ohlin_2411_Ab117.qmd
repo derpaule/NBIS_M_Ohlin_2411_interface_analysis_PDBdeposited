@@ -39,7 +39,7 @@ This part is to make some initial definitions.
 ### To define amino acid types
 
 ```{r aa-definition}
-project_cfg <- get_project_config("ab117")
+project_cfg <- get_project_config("ab")
 AA_tribble <- project_cfg$AA_tribble
 AA_singlecode <- project_cfg$AA_singlecode
 ```

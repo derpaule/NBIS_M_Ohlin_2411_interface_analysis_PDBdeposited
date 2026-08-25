@@ -6,6 +6,7 @@ format: html
 ```{r}
 library(statip)
 library(plotly)
+library(tidyjson)
 #library(UniprotR)
 ```
 
@@ -457,20 +458,6 @@ arpeggio_object.trib <- tribble(~obj_arpeggio, ~obj_new,
                            "OBJ00_AB1", "OBJ00_ARP"
                            )
 
-generate_arpeggio_contacts_f <- function(data, arpeggio_sel){
-  data_in <- data %>% dplyr::filter(., arpeggio == {{arpeggio_sel}} )
-  data_proximal <- data_in %>% dplyr::filter(., name == "Proximal") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_ prox_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
-  data_hydrophobic <- data_in %>% dplyr::filter(., name == "Aromatic" | name == "Hydrophobic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_hphobic_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
-  data_hb <- data_in %>% dplyr::filter(., name == "HydrogenBond" | name == "Ionic") %>% dplyr::mutate(., rowid = row_number()) %>% dplyr::mutate(., cmd = render_distance_selection_line(template_path = "../pml_templates/distance_selection_line.pmltpl", distance_name = paste(obj_arpeggio, "_hbond_", chain1, number1, chain2, number2, "_", rowid, sep = ""), selection1 = selection1, selection2 = selection2))
-  data_out <- data_proximal %>% bind_rows(., data_hydrophobic) %>% bind_rows(., data_hb) #%>% dplyr::select(., name, cmd)
-  return(data_out)
-}
-
-tune_arpeggio_contacts_f <- function(data){
-  data_out <- data %>% dplyr::select(., c("obj_arpeggio", "chain1", "number1", "chain2", "number2")) %>% unite(., "chainnum1", c("chain1", "number1"), sep="_") %>% unite(., "chainnum2", c("chain2", "number2"), sep="_") %>% pivot_longer(., cols=c("chainnum1", "chainnum2")) %>% dplyr::select(., !c("name")) %>% group_by(., obj_arpeggio) %>% dplyr::reframe(., res_sel = unique(value)) %>% separate(., "res_sel", into = c("chain", "resi"), sep="_") %>% dplyr::mutate(., cmd_resi = paste("(chain ", chain, " and resi ", resi,")", sep="")) %>% dplyr::select(., !c("chain", "resi")) %>% dplyr::reframe(., obj_arpeggio = unique(obj_arpeggio), cmd_resi = paste(cmd_resi, collapse = " or ")) %>% left_join(., arpeggio_object.trib) %>% dplyr::mutate(., cmd = paste("select ", obj_new, "_show, ", obj_new, " and (", cmd_resi, ")", sep="")) %>% dplyr::select(., c("cmd"))
-  return(data_out)
-}
-
 arpeggio_pymol_exports <- build_arpeggio_pymol_exports(
   pdbsum_filelist_atomlevel.tib = pdbsum_filelist_atomlevel.tib,
   generate_contacts_fn = generate_arpeggio_contacts_f,
@@ -496,6 +483,98 @@ write_datatable_html(
 ```
 
 The the PyMol script can be continued to scene_012 in order to visualize the hydrophobic and H bond contacts on the focus region.
+
+# Natural variants (Uniprot JSON) visualization
+
+## Download data from Uniprot
+![Uniprot variants](img/uniprot_variants.png){width="307"} Select the natural variants and download the json file.
+
+## Import JSON
+```{r}
+uniprot_variant_tribble <- tribble(~filename,~obj_pymol, ~chain, ~Ab,
+  "P0DTC2.json", "OBJ00_escape", "A", "Ab117",
+  "P0DTC2.json", "OBJ00_escape", "A", "Ab321"
+)
+
+ensure_dir("./data_uniprot")
+
+uniprotvariants_filelist = list.files(path = "./data_uniprot", pattern = "*", recursive = TRUE, include.dirs = TRUE, full.names = TRUE)
+
+read_uniprotvariants_f <- function(data_in) {
+  data_json <- tidyjson::read_json(data_in, format="json") 
+  return(data_json)
+}
+
+process_json_variants_f <- function(json_in) {
+  json_features <- json_in %>% enter_object(features) %>% gather_array
+  json_obj <- json_features$..JSON %>% gather_object()
+  json_tibble <- json_obj %>% dplyr::mutate(., value=..JSON) %>% as_tibble() %>% pivot_wider() %>% unnest(., c(type, description, featureId)) %>% unnest_wider(., col="location") %>% unnest_longer(., c(start, end)) %>% pivot_wider(., names_from=c("start_id", "end_id"), values_from=c("start", "end")) %>% unnest(., c(start_value_value, start_modifier_modifier, end_value_value, end_modifier_modifier)) %>% unnest_wider(., alternativeSequence) %>% unnest_longer(., alternativeSequences) %>% dplyr::select(., !c(featureId)) %>% dplyr::mutate(., start_end = paste(start_value_value, end_value_value, sep=":")) %>% dplyr::select(., !c("start_modifier_modifier", "end_modifier_modifier", "end_value_value"))
+  #json_features_extract <- json_features[[1]]$..JSON[[1]]$features 
+  #json_resi <- json_type$json_spread[[1]]$..JSON[[2]]$start
+  return(json_tibble)
+}
+
+uniprotvariants_list.tib <- as_tibble(uniprotvariants_filelist) %>% separate(., value, into = c("folder", "subfolder", "filename"), sep = "\\/", remove = FALSE)
+
+uniprotvariants_list_json.tib <- uniprotvariants_list.tib %>% left_join(., uniprot_variant_tribble) %>% dplyr::mutate(., data = purrr::map(value, ~read_uniprotvariants_f(.))) %>% dplyr::mutate(., json_out = purrr::map(data, ~process_json_variants_f(.))) 
+
+```
+
+### specific to Ab tested spike variants
+NOTE: This analysis can yield ambiguous status for certain residues, e.g. can be simultaneously in two groups which may be problematic for coloring. To solve this problem, I have added a correction in the pymol script, i.e.
+```
+select OBJ00_escapeAb321_neg_pos, OBJ00_escapeAb321_neg and OBJ00_escapeAb321_pos
+cmd.color_deep("cyan", 'OBJ00_escapeAb321_neg_pos', 0)
+```
+
+```{r}
+# XBB.1.16 similar to XBB.1.5 (https://www.gavi.org/vaccineswork/arcturus-who-upgrades-xbb116-covid-19-variant-interest)
+# B.1.1.529 is basically BA.1 https://pmc.ncbi.nlm.nih.gov/articles/PMC9376347/
+
+Ab_spike_variant_checker_f <- function(tib_in, Ab) {
+  if (Ab=="Ab117") {
+    neg_string <- "Beta|Gamma|Omicron/BA.1[,[:space:]]|Omicron/BA.2[,[:space:]]|Omicron/BA.2.75[,[:space:]]|Omicron/XBB.1.5[,[:space:]]"
+    pos_string <- "Alpha|Delta|Kappa"
+  }
+  else if (Ab=="Ab321") {
+    neg_string <- "Omicron/XBB.1.5[,[:space:]]|Omicron/BA.1[,[:space:]]"
+    pos_string <- "Alpha|Delta|Kappa|Beta|Gamma"
+  }
+  else
+  {
+    neg_string <- "Omicron"
+    pos_string <- "Alpha"
+  }
+  tib_out <- tib_in %>% dplyr::filter(., type == "Natural variant") %>% dplyr::mutate(., Alpha=str_extract(description, "Alpha"), Beta=str_extract(description,"Beta"), Gamma=str_extract(description,"Gamma"), Delta=str_extract(description,"Delta"), Epsilon=str_extract(description,"Epsilon"), Iota=str_extract(description,"Iota"), Eta=str_extract(description,"Eta"), Lambda=str_extract(description,"Lambda"), Mu=str_extract(description,"Mu"), Omicron=str_extract(description,"Omicron"), Kappa=str_extract(description,"Kappa"), Theta=str_extract(description,"Theta")) %>% unite(., spike_variants, c("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Iota","Eta","Lambda", "Omicron", "Mu", "Kappa", "Theta"), sep="_", na.rm = TRUE) %>% dplyr::mutate(., Ab_tested_pos=str_detect(description, pos_string), Ab_tested_neg=str_detect(description, neg_string)) %>% dplyr::mutate(., Ab_tested_pos=recode_values(as.character(Ab_tested_pos), "TRUE" ~ "pos"), Ab_tested_neg=recode_values(as.character(Ab_tested_neg), "TRUE" ~ "neg")) %>% unite(., Ab_tested, c("Ab_tested_pos", "Ab_tested_neg"), remove = FALSE, na.rm = TRUE) %>% dplyr::mutate(., Ab_tested=na_if(Ab_tested, "") ) %>% drop_na(., Ab_tested) 
+  return(tib_out)
+  
+}
+
+uniprot_pymol_f <- function(data_in){
+  data_out <- data_in %>% dplyr::select(., start_value_value, Ab_tested) %>% dplyr::mutate(., before = "resi") %>% unite(., residues, c("before", "start_value_value"), sep=" ") %>% nest(., residues) %>% dplyr::mutate(., data_conc = purrr::map(data, ~dplyr::summarise(., residues_conc = str_flatten(residues, collapse = " or ")))) %>% dplyr::select(., !c("data")) %>% unnest(., data_conc)
+  return(data_out)
+}
+
+uniprotvariants_list_json_spike.tib <- uniprotvariants_list_json.tib %>% dplyr::mutate(., Ab_tested = purrr::pmap(list(json_out, Ab), Ab_spike_variant_checker_f)) 
+
+uniprotvariants_list_json_spike_pymol.tib <- uniprotvariants_list_json_spike.tib %>% dplyr::select(., obj_pymol, Ab, chain, Ab_tested) %>% dplyr::mutate(., spike_residues = purrr::map(Ab_tested, ~uniprot_pymol_f(.))) %>% dplyr::select(., !c("Ab_tested")) %>% unnest(., spike_residues) %>% dplyr::mutate(., cmd = paste("select ", obj_pymol, Ab, "_", Ab_tested, ", ", obj_pymol, Ab, " and chain ", chain, " and (", residues_conc, ")", sep = "")) %>% dplyr::select(., !c("Ab_tested", "residues_conc", "chain")) %>% nest(., .by=c(obj_pymol, Ab), .key="cmd") %>% dplyr::mutate(., filename = paste("./pyscripts/", obj_pymol, Ab, ".pml", sep=""))
+
+pwalk(list(uniprotvariants_list_json_spike_pymol.tib$cmd, uniprotvariants_list_json_spike_pymol.tib$filename), write_csv_pymol_f)
+
+```
+### HTML table of variants
+
+```{r}
+uniprotvariants_list_json_spike.html <- uniprotvariants_list_json_spike.tib %>% dplyr::select(., Ab, Ab_tested) %>% unnest(., Ab_tested) %>% dplyr::select(., Ab, resi = start_value_value, wt = originalSequence, mut = alternativeSequences, spike_variants, Ab_tested_pos, Ab_tested_neg)
+
+write_datatable_html(
+  data = uniprotvariants_list_json_spike.html,
+  output_file = "uniprotvariants_list_json_spike.html"
+)
+```
+
+
+
 
 # Export some plots for combining them.
 
