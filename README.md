@@ -20,3 +20,10 @@ The scripts have been tested with these deposited PDB files of the two Abs:
 -   [Ab117 with PDB code 9IB1](https://www.rcsb.org/structure/9IB1)
 -   [Ab321 with PDB code 9TK0](https://www.rcsb.org/structure/9TK0); Note: not released yet.
 -   [ACE2 with PDB code 7A94](https://www.rcsb.org/structure/7A94)
+
+The branch `NBIS_M_Ohlin_2411_interface_analysis_vscoded_mimotopes` contains additional analyses of Ab/Spike complexes identified using [Foldseek-multimer](https://github.com/steineggerlab/foldseek). 
+
+More information about running the analysis is given in the index file.  
+
+Please raise issues if you find errors, need help, or would like to have this developed into a more automated solution.
+
