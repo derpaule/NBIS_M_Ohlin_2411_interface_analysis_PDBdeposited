@@ -2,7 +2,7 @@
 
 The auxiliary scripts [NBIS_M_Ohlin_2411_Ab321](NBIS_M_Ohlin_2411_Ab321/NBIS_M_Ohlin_2411_Ab321.html) and [NBIS_M_Ohlin_2411_Ab117](NBIS_M_Ohlin_2411_Ab117/NBIS_M_Ohlin_2411_Ab117.html) were used to analyze the Ab321/RBD and Ab117/RBD interfaces, as presented in our [publication](), and also compared to the ACE2/RBD interface. 
 
-The scripts are work in progress, but provide a framework to analyze and visualize antigen/antibody interactions. 
+The scripts are work in progress, but provide a framework to analyze and visualize antigen/antibody interactions. The script combine outputs from [IMGT Domain/Gap align](https://www.imgt.org/3Dstructure-DB/cgi/DomainGapAlign.cgi), [Arpeggio](https://biosig.lab.uq.edu.au/arpeggioweb/) and [PISA](https://www.ebi.ac.uk/pdbe/pisa/) webservers. 
 If you know R and PyMol you could extend this script to other outputs, also consider AI tools. Or you could also transform this into a more automated solution. [Examples](https://pymolwiki.org/Jupyter) exist for PyMol embedded code/analysis within Jupyter notebooks. 
 
 Check the pml files (ASCII text), and copy commands scene-by-scene to move forward in PyMol. 
