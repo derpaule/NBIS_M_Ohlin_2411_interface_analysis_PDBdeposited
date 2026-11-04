@@ -1,1 +1,0 @@
-/nethome/timschu/software/pymol_scripts/findseq.py
